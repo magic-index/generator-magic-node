@@ -211,30 +211,30 @@ tsconfig.json
 
 <a href="https://nodejs.org">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/node.png" style="width:100px">
+https://raw.githubusercontent.com/little-snow-fox/images/master/logos/node.png" style="max-width:20%">
 </a>
 <a href="https://github.com/koajs/koa">
-    <img src="https://raw.githubusercontent.com/koajs/koa/HEAD/docs/logo.png" style="width:100px">
+    <img src="https://raw.githubusercontent.com/koajs/koa/HEAD/docs/logo.png" style="max-width:20%">
 </a>
 <a href="https://www.tslang.cn">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/typescript.png" style="width:100px">
+https://raw.githubusercontent.com/little-snow-fox/images/master/logos/typescript.png" style="max-width:20%">
 </a>
 <a href="http://typeorm.io">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/typeorm.png" style="width:100px; background-color: #FFFFFF;">
+https://raw.githubusercontent.com/little-snow-fox/images/master/logos/typeorm.png" style="max-width:20%; background-color: #FFFFFF;">
 </a>
 <a href="https://www.mysql.com">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/mysql.png" style="width:100px; background-color: #FFFFFF;">
+https://raw.githubusercontent.com/little-snow-fox/images/master/logos/mysql.png" style="max-width:20%; background-color: #FFFFFF;">
 </a>
 <a href="https://www.elastic.co">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/elastic.png" style="width:100px; background-color: #FFFFFF;">
+https://raw.githubusercontent.com/little-snow-fox/images/master/logos/elastic.png" style="max-width:20%; background-color: #FFFFFF;">
 </a>
 <a href="https://yeoman.io">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/yeoman.png" style="width:100px">
+https://raw.githubusercontent.com/little-snow-fox/images/master/logos/yeoman.png" style="max-width:20%">
 </a>
 
 # License  
