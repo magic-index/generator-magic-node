@@ -1,19 +1,18 @@
 <h1 align="center">generator-magic-node</h1>
-[![NPM version][npm-image]][npm-url]
 <a href="https://www.npmjs.com/package/vue" rel="nofollow">
     <img src="https://camo.githubusercontent.com/9a140a4c68e7c178bc660bee7675f4f25ff7ade3/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f6c2f7675652e737667" alt="License" data-canonical-src="https://img.shields.io/npm/l/vue.svg" style="max-width:100%;">
 </a>
 
 # 描述   
-一个 node 后端服务生成器，能够生成脚手架和实体类。  
-为了保证一套前端项目所需要的后台能在 jhipster 与 nodejs 之间无缝切换，所以接口规范与 jhipster 尽量地保持一致，包括授权与鉴权方式。
-
+一个 node 后端服务生成器，能够生成脚手架和实体类。  
+为了保证一套前端项目所需要的后台能在 jhipster 与 nodejs 之间无缝切换，所以接口规范与 jhipster 尽量地保持一致，包括授权与鉴权方式。
+
 # 条件  
 1. 依赖 yeoman
 ```
 npm install -g yo
 ```
-2. 实体类生成部分需要使用 [JDL](https://www.jhipster.tech/jdl) 生成出来的 JSON 文件，对 [JDL](https://www.jhipster.tech/jdl) 不熟悉的同学可以到 [jhipster](https://www.jhipster.tech) 官网查找相关文档  
+2. 实体类生成部分需要使用 [JDL](https://www.jhipster.tech/jdl) 生成出来的 JSON 文件，对 [JDL](https://www.jhipster.tech/jdl) 不熟悉的同学可以到 [jhipster](https://www.jhipster.tech) 官网查找相关文档  
 ```
 npm install -g generator-jhipster
 ```
@@ -52,7 +51,7 @@ yo magic-node
     Entity name: Region
     ```
 
-# 目录结构
+# 目录结构
 ```
 .directory
 .gitignore
@@ -150,7 +149,7 @@ tsconfig.json
     Cache-Control: no-cache
     Postman-Token: 70b023ea-b101-c46e-9240-90f1909c2107
     ```
-    响应：
+    响应：
     ```
     {
         "id": "2"
