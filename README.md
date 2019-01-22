@@ -210,31 +210,25 @@ tsconfig.json
 # 技术栈  
 
 <a href="https://nodejs.org">
-    <img src="
-https://raw.githubusercontent.com/little-snow-fox/images/master/logos/node.png" style="max-width:20%">
+    <img src="https://raw.githubusercontent.com/little-snow-fox/images/master/logos/node.png" width="20%">
 </a>
 <a href="https://github.com/koajs/koa">
-    <img src="https://raw.githubusercontent.com/koajs/koa/HEAD/docs/logo.png" style="max-width:20%">
+    <img src="https://raw.githubusercontent.com/koajs/koa/HEAD/docs/logo.png" width="20%">
 </a>
 <a href="https://www.tslang.cn">
-    <img src="
-https://raw.githubusercontent.com/little-snow-fox/images/master/logos/typescript.png" style="max-width:20%">
+    <img src="https://raw.githubusercontent.com/little-snow-fox/images/master/logos/typescript.png" width="20%">
 </a>
 <a href="http://typeorm.io">
-    <img src="
-https://raw.githubusercontent.com/little-snow-fox/images/master/logos/typeorm.png" style="max-width:20%; background-color: #FFFFFF;">
+    <img src="https://raw.githubusercontent.com/little-snow-fox/images/master/logos/typeorm.png" width="20%">
 </a>
 <a href="https://www.mysql.com">
-    <img src="
-https://raw.githubusercontent.com/little-snow-fox/images/master/logos/mysql.png" style="max-width:20%; background-color: #FFFFFF;">
+    <img src="https://raw.githubusercontent.com/little-snow-fox/images/master/logos/mysql.png" width="20%">
 </a>
 <a href="https://www.elastic.co">
-    <img src="
-https://raw.githubusercontent.com/little-snow-fox/images/master/logos/elastic.png" style="max-width:20%; background-color: #FFFFFF;">
+    <img src="https://raw.githubusercontent.com/little-snow-fox/images/master/logos/elastic.png" width="20%">
 </a>
 <a href="https://yeoman.io">
-    <img src="
-https://raw.githubusercontent.com/little-snow-fox/images/master/logos/yeoman.png" style="max-width:20%">
+    <img src="https://raw.githubusercontent.com/little-snow-fox/images/master/logos/yeoman.png" width="20%">
 </a>
 
 # License  
