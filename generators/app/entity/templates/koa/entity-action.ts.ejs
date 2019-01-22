@@ -1,0 +1,120 @@
+import { Context } from 'koa';
+import { getManager } from 'typeorm';
+import <%= entity.entityClassName %> from '../entity/<%= entity.entityClassName %>';
+import { validate } from 'class-validator';
+<%_ if (yoConfig.searchEngine === 'elasticsearch') { _%>
+import Elastic from '../util/Elastic';
+<%_ } _%>
+import { setRoute, RequestMethod } from '../middleware/Routes';
+import { <%= yoConfig.searchEngine === 'elasticsearch' ? 'getElasticSearchParams, setElasticSearchPagingHeader, ' : '' %>deleteSuccessfulResponse, getRequestParamId } from '../util/Tools';
+import { BadRequestAlertException, NotFoundAlertException } from '../middleware/RequestError';
+
+export default class <%= entity.entityClassName %>Action {
+  /**
+   * get
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/<%= entity.entityFolderNamePlural %>/:id')
+  async get<%= entity.entityClassName %>(context: Context, decoded?: any) {
+    const id = getRequestParamId(context);
+    const <%= entity.entityCamelName %>Repository = getManager().getRepository(<%= entity.entityClassName %>);
+    <%_ if (entity.entityModel.relationships.length > 0) { _%> 
+    const <%= entity.entityCamelName %>: <%= entity.entityClassName %> = await <%= entity.entityCamelName %>Repository.findOne(id, {
+      relations: [
+        <%_ entity.entityModel.relationships.forEach(item => { _%>
+        <%_   if (item.relationshipType === 'many-to-one' || item.relationshipType === 'one-to-one') { _%>
+        '<%= item.relationshipName %>',
+        <%_   } _%>
+        <%_ }) _%>
+      ]
+    });
+    <%_ } else { _%>
+    const <%= entity.entityCamelName %>: <%= entity.entityClassName %> = await <%= entity.entityCamelName %>Repository.findOne(id);
+    <%_ } _%>
+    if (<%= entity.entityCamelName %>) {
+      context.body = <%= entity.entityCamelName %>;
+    } else {
+      throw new NotFoundAlertException();
+    }
+  }
+  /**
+   * post
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/<%= entity.entityFolderNamePlural %>', RequestMethod.POST)
+  async create<%= entity.entityClassName %>(context: Context, decoded?: any) {
+    const <%= entity.entityCamelName %>Repository = getManager().getRepository(<%= entity.entityClassName %>);
+    const <%= entity.entityCamelName %>: <%= entity.entityClassName %> = <%= entity.entityCamelName %>Repository.create(<<%= entity.entityClassName %>>{
+      ...context.request.body
+    });
+    const errors = await validate(<%= entity.entityCamelName %>);
+    if (errors.length > 0) {
+      throw new BadRequestAlertException(null, errors);
+    } else {
+      await getManager().save(<%= entity.entityCamelName %>);
+      <%_ if (yoConfig.searchEngine === 'elasticsearch') { _%>
+      await Elastic.syncCreate(<%= entity.entityCamelName %>.id, <%= entity.entityCamelName %>Repository.metadata.tableName);
+      <%_ } _%>
+      context.body = <%= entity.entityCamelName %>;
+    }
+  }
+  /**
+   * put
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/<%= entity.entityFolderNamePlural %>', RequestMethod.PUT)
+  async update<%= entity.entityClassName %>(context: Context, decoded?: any) {
+    const <%= entity.entityCamelName %>Repository = getManager().getRepository(<%= entity.entityClassName %>);
+    const <%= entity.entityCamelName %>: <%= entity.entityClassName %> = <%= entity.entityCamelName %>Repository.create(<<%= entity.entityClassName %>>{
+      ...context.request.body
+    });
+    const errors = await validate(<%= entity.entityCamelName %>);
+    if (errors.length > 0) {
+      throw new BadRequestAlertException(null, errors);
+    } else {
+      await <%= entity.entityCamelName %>Repository.update(<%= entity.entityCamelName %>.id, <%= entity.entityCamelName %>);
+      <%_ if (yoConfig.searchEngine === 'elasticsearch') { _%>      
+      await Elastic.syncUpdate(<%= entity.entityCamelName %>.id, <%= entity.entityCamelName %>Repository.metadata.tableName);
+      <%_ } _%>
+      context.body = <%= entity.entityCamelName %>;
+    }
+  }
+  /**
+   * delete
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/<%= entity.entityFolderNamePlural %>/:id', RequestMethod.DELETE)
+  async delete<%= entity.entityClassName %>(context: Context, decoded?: any) {
+    const id = getRequestParamId(context);
+    const <%= entity.entityCamelName %>Repository = getManager().getRepository(<%= entity.entityClassName %>);
+    await <%= entity.entityCamelName %>Repository.delete(id);
+    <%_ if (yoConfig.searchEngine === 'elasticsearch') { _%>
+    await Elastic.syncDelete(id, <%= entity.entityCamelName %>Repository.metadata.tableName);
+    <%_ } _%>
+    deleteSuccessfulResponse(context, id)
+  }
+  /**
+   * search
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/_search/<%= entity.entityFolderNamePlural %>')
+  async search<%= entity.entityClassName %>(context: Context, decoded?: any) {
+    <%_ if (yoConfig.searchEngine === 'elasticsearch') { _%>      
+    const res: any = await Elastic.search(getElasticSearchParams(context), '<%= entity.entityCamelName %>');
+    setElasticSearchPagingHeader(context, res);
+    context.body = res.data;
+    <%_ } else if (yoConfig.searchEngine === 'mysql') { _%>
+    // todo: The code template for using mysql search is not yet complete, please implement it manually for now.
+    <%_ } _%>
+  }
+}

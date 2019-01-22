@@ -1,0 +1,41 @@
+{
+  "port": 3000,
+  "jwtSecret": "202cb962ac59075b964b07152d234b70",
+  "elastic": {
+    "enable": <%=projectOptions.searchEngine === 'elasticsearch' ? 'true' : 'false' %>,
+    "host": "localhost",
+    "port": "9200",
+    "log": "error"
+  },
+  "eureka": {
+    "enable": false,
+    "auth": {
+      "user": "admin",
+      "password": "admin"
+    },
+    "parameter": {
+      "instance": {
+        "app": "koa-monolith",
+        "hostName": "localhost",
+        "ipAddr": "127.0.0.1",
+        "port": {
+          "$": 8082,
+          "@enabled": true
+        },
+        "vipAddress": "127.0.0.1",
+        "dataCenterInfo": {
+          "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+          "name": "MyOwn"
+        }
+      },
+      "eureka": {
+        "host": "localhost",
+        "port": 8761,
+        "servicePath": "/eureka/apps/"
+      }
+    }
+  },
+  "sampleData": {
+    "enable": true
+  }
+}

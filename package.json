@@ -1,0 +1,16 @@
+{
+  "name": "generator-magic-node",
+  "version": "0.1.0",
+  "description": "",
+  "files": [
+    "generators"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "plural": "^1.1.0",
+    "yeoman-generator": "^1.0.0"
+  }
+}

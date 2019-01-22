@@ -1,0 +1,79 @@
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn<%_ entity.entityModel.relationshipsTypeList.forEach(item => { %>, <%= item %><% }) %> } from "typeorm";
+import * as Validator from 'class-validator';
+<%_ entity.entityModel.relationshipsEntityList.forEach(item => { 
+    if ( item.otherEntityClassName !== entity.entityClassName ) {
+_%>
+import <%= item.otherEntityClassName %> from './<%= item.otherEntityClassName %>';
+<%_ 
+    }
+})
+_%>
+
+@Entity()
+export default class <%= entity.entityClassName %> {
+
+  <%_ if (!entity.existsId) { _%>
+  @PrimaryGeneratedColumn()
+  id: number;
+  <%_ } _%>
+
+  <%_ entity.entityModel.fields.forEach(function(item) { _%>
+  @Column({
+    type: "<%= item.sqlFieldType %>",
+    nullable: <%= item.fieldValidateRules.includes('required') ? 'false' : 'true' %>
+    <%_ if (item.fieldValidateRulesMaxlength) { _%>
+    length: <%= item.fieldValidateRulesMaxlength %>
+    <%_ } _%>
+  })
+  <%_ if (item.fieldValidateRules.includes('required')) { _%>
+  @Validator.IsNotEmpty()
+  <%_ } _%>
+  <%_ if (item.fieldValidateRulesMinlength) { _%>
+    @Validator.MinLength(<%= item.fieldValidateRulesMinlength %>)
+  <%_ } _%>
+  <%_ if (item.fieldValidateRulesMaxlength) { _%>
+  @Validator.MaxLength(<%= item.fieldValidateRulesMaxlength %>)
+  <%_ } _%>
+  <%= item.fieldName %>: <%= item.jsFieldType %>;
+
+  <%_ }) _%>
+  <%# 解析关联关系 %>
+  <%_ if (entity.entityModel.relationships || entity.entityModel.relationships.length > 0) {
+    entity.entityModel.relationships.forEach(function (item) {
+      if (item.relationshipType === 'one-to-one') {
+  _%>
+  <%# 一对一 %>
+  @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName%>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
+  <%_ if (item.relationshipValidateRules.includes('required')) { _%>
+  @Validator.IsEmpty()
+  <%_ } _%>
+  @JoinColumn()
+  <%= item.relationshipName%>: <%= item.otherEntityClassName %>;
+  <%_ } else if (item.relationshipType === 'one-to-many') { _%>
+  <%# 一对多 %>
+  @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName %>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
+  <%_ if (item.relationshipValidateRules.includes('required')) { _%>
+  @Validator.IsEmpty()
+  <%_ } _%>
+  <%= item.relationshipNamePlural %>: <%= item.otherEntityClassName %>[];
+  <%_ } else if (item.relationshipType === 'many-to-one') { _%>
+  <%# 多对一 %>
+  @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName %>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
+  <%_ if (item.relationshipValidateRules.includes('required')) { _%>
+  @Validator.IsEmpty()
+  <%_ } _%>
+  <%= item.relationshipName%>: <%= item.otherEntityClassName %>;
+  <%_ } else if (item.relationshipType === 'many-to-many') { _%>
+  <%# 多对多 %>
+  @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName %>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
+  <%_ if (item.relationshipValidateRules.includes('required')) { _%>
+  @Validator.IsEmpty()
+  <%_ } _%>
+  <%= item.relationshipNamePlural%>: <%= item.otherEntityClassName %>[];
+  <%_
+      }
+    })
+  }
+  _%>
+
+}

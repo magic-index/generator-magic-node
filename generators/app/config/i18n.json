@@ -1,0 +1,41 @@
+{
+  "en": {
+    "coverAlert": "Warning, not empty project, file will be overwritten:",
+    "workType": "What generates？",
+    "basicFramework": "Basic framework",
+    "entityClass": "Entity class",
+    "projectName": "Project name",
+    "authorName": "Author name",
+    "authorEmail": "Author email",
+    "entityName": "Entity name",
+    "notInputContentAlert": "Please enter the content.",
+    "entityNotExistsAlert": "The entity you entered does not exist.",
+    "useSearchEngine": "Please select the type of search to use."
+  },
+  "zh": {
+    "coverAlert": "警告，当前项目非空，将会覆盖相关文件:",
+    "workType": "需要变点什么出来？",
+    "basicFramework": "基础框架",
+    "entityClass": "实体类",
+    "projectName": "工程名",
+    "authorName": "作者名",
+    "authorEmail": "作者邮箱",
+    "entityName": "实体名",
+    "notInputContentAlert": "请输入内容。",
+    "entityNotExistsAlert": "你输入的实体并不存在。",
+    "useSearchEngine": "需要使用哪种搜索引擎？"
+  },
+  "ja": {
+    "coverAlert": "警告は、関連書類をカバーすることになります:",
+    "workType": "何を生成する？",
+    "basicFramework": "基礎的な枠組み",
+    "entityClass": "Entity class",
+    "projectName": "Project name",
+    "authorName": "Author name",
+    "authorEmail": "Author email",
+    "entityName": "Entity name",
+    "notInputContentAlert": "Please enter the content.",
+    "entityNotExistsAlert": "The entity you entered does not exist.",
+    "useSearchEngine": "Please select the type of search to use."
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "name": "<%=projectOptions.projectName %>",
+  "version": "0.1.0-dev",
+  "description": "Example how to use Koa and TypeORM with TypeScript.",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "author": {
+    "name": "<%=projectOptions.authorName %>",
+    "email": "<%=projectOptions.authorEmail %>"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/typeorm/typescript-koa-example.git"
+  },
+  "bugs": {
+    "url": "https://github.com/typeorm/typescript-koa-example/issues"
+  },
+  "tags": [
+    "orm",
+    "typescript",
+    "typescript-orm",
+    "typeorm-sample",
+    "typeorm-example",
+    "typeorm-koa-example"
+  ],
+  "devDependencies": {
+    "@types/koa": "^2.0.45",
+    "@types/koa-bodyparser": "^4.2.0",
+    "@types/koa-router": "^7.0.27",
+    "@types/node": "^9.6.5",
+    "typescript": "^2.8.1"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "class-validator": "^0.9.1",
+    "csv-parser": "^2.1.0",
+    "elasticsearch": "^15.1.1",
+    "eureka-js-client": "^4.4.1",
+    "jsonwebtoken": "^8.3.0",
+    "koa": "^2.5.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-router": "^7.4.0",
+    "md5": "^2.2.1",
+    "mysql": "^2.15.0",
+    "typeorm": "^0.2.0"
+  },
+  "scripts": {
+    "start": "tsc && node src/index.js",
+    "build": "tsc"
+  }
+}
