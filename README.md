@@ -1,7 +1,9 @@
 <h1 align="center">generator-magic-node</h1>
+<p align="center">
 <a href="https://www.npmjs.com/package/vue" rel="nofollow">
     <img src="https://camo.githubusercontent.com/9a140a4c68e7c178bc660bee7675f4f25ff7ade3/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f6c2f7675652e737667" alt="License" data-canonical-src="https://img.shields.io/npm/l/vue.svg" style="max-width:100%;">
 </a>
+</p>
 
 # 描述   
 一个 node 后端服务生成器，能够生成脚手架和实体类。  
@@ -209,30 +211,30 @@ tsconfig.json
 
 <a href="https://nodejs.org">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/node.png" style="max-width:100px">
+https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/node.png" style="width:100px">
 </a>
 <a href="https://github.com/koajs/koa">
-    <img src="https://raw.githubusercontent.com/koajs/koa/HEAD/docs/logo.png" style="max-width:100px">
+    <img src="https://raw.githubusercontent.com/koajs/koa/HEAD/docs/logo.png" style="width:100px">
 </a>
 <a href="https://www.tslang.cn">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/typescript.png" style="max-width:100px">
+https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/typescript.png" style="width:100px">
 </a>
 <a href="http://typeorm.io">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/typeorm.png" style="max-width:100px; background-color: #FFFFFF;">
+https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/typeorm.png" style="width:100px; background-color: #FFFFFF;">
 </a>
 <a href="https://www.mysql.com">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/mysql.png" style="max-width:100px; background-color: #FFFFFF;">
+https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/mysql.png" style="width:100px; background-color: #FFFFFF;">
 </a>
 <a href="https://www.elastic.co">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/elastic.png" style="max-width:100px; background-color: #FFFFFF;">
+https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/elastic.png" style="width:100px; background-color: #FFFFFF;">
 </a>
 <a href="https://yeoman.io">
     <img src="
-https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/yeoman.png" style="max-width:100px">
+https://open-source-project.oss-cn-shenzhen.aliyuncs.com/logos/yeoman.png" style="width:100px">
 </a>
 
 # License  
