@@ -75,6 +75,106 @@ src
 │-- util
 tsconfig.json
 ```
+# 生成出来的控制层例子
+```
+import { Context } from 'koa';
+import { getManager } from 'typeorm';
+import Region from '../entity/Region';
+import { validate } from 'class-validator';
+import Elastic from '../util/Elastic';
+import { setRoute, RequestMethod } from '../middleware/Routes';
+import { getElasticSearchParams, setElasticSearchPagingHeader, deleteSuccessfulResponse, getRequestParamId } from '../util/Tools';
+import { BadRequestAlertException, NotFoundAlertException } from '../middleware/RequestError';
+
+export default class RegionAction {
+  /**
+   * get
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/regions/:id')
+  async getRegion(context: Context, decoded?: any) {
+    const id = getRequestParamId(context);
+    const regionRepository = getManager().getRepository(Region);
+    const region: Region = await regionRepository.findOne(id);
+    if (region) {
+      context.body = region;
+    } else {
+      throw new NotFoundAlertException();
+    }
+  }
+  /**
+   * post
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/regions', RequestMethod.POST)
+  async createRegion(context: Context, decoded?: any) {
+    const regionRepository = getManager().getRepository(Region);
+    const region: Region = regionRepository.create(<Region>{
+      ...context.request.body
+    });
+    const errors = await validate(region);
+    if (errors.length > 0) {
+      throw new BadRequestAlertException(null, errors);
+    } else {
+      await getManager().save(region);
+      await Elastic.syncCreate(region.id, regionRepository.metadata.tableName);
+      context.body = region;
+    }
+  }
+  /**
+   * put
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/regions', RequestMethod.PUT)
+  async updateRegion(context: Context, decoded?: any) {
+    const regionRepository = getManager().getRepository(Region);
+    const region: Region = regionRepository.create(<Region>{
+      ...context.request.body
+    });
+    const errors = await validate(region);
+    if (errors.length > 0) {
+      throw new BadRequestAlertException(null, errors);
+    } else {
+      await regionRepository.update(region.id, region);
+      await Elastic.syncUpdate(region.id, regionRepository.metadata.tableName);
+      context.body = region;
+    }
+  }
+  /**
+   * delete
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/regions/:id', RequestMethod.DELETE)
+  async deleteRegion(context: Context, decoded?: any) {
+    const id = getRequestParamId(context);
+    const regionRepository = getManager().getRepository(Region);
+    await regionRepository.delete(id);
+    await Elastic.syncDelete(id, regionRepository.metadata.tableName);
+    deleteSuccessfulResponse(context, id)
+  }
+  /**
+   * search
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/_search/regions')
+  async searchRegion(context: Context, decoded?: any) {
+    const res: any = await Elastic.search(getElasticSearchParams(context), 'region');
+    setElasticSearchPagingHeader(context, res);
+    context.body = res.data;
+  }
+}
+
+``` 
 
 # 接口例子 
 * 创建  
