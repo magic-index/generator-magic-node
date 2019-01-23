@@ -75,7 +75,7 @@ src
 │-- util
 tsconfig.json
 ```
-# 生成出来的控制层例子
+# 生成出来的控制层例子
 ```
 import { Context } from 'koa';
 import { getManager } from 'typeorm';
