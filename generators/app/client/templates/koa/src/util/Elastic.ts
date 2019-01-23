@@ -84,7 +84,11 @@ export default class Elastic {
     res.hits.hits.forEach((item) => {
       data.push(item._source);
     });
-    const count = await this.client.count(options);
+    const count = await this.client.count({
+      index: connect.options.database,
+      type: tableName,
+      q: param.query
+    });
     return {
       data,
       page: options.from,
