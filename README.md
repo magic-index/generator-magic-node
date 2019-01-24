@@ -67,6 +67,7 @@ package.json
 src
 │-- controller  # 控制层，接口入口
 │-- entity  # 实体层，数据模型类位置
+│-- enum  # 枚举对象
 │-- index.ts
 │-- middleware
 │-- migration

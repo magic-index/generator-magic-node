@@ -34,7 +34,7 @@ module.exports = class extends Generator {
         type: 'input',
         name: 'projectName',
         message: translate.projectName + ':',
-        default: 'hello-work'
+        default: 'hello-world'
       },
       {
         type: 'input',
