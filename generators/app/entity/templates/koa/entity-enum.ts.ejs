@@ -1,0 +1,12 @@
+export const <%= entity.entityModel.name %><%= pageParams.fieldType %>Array = [
+  <%_ const strArray = pageParams.fieldValues.split(','); strArray.forEach((item, index) => { _%>
+  '<%= item %>'<%= index < strArray.length - 1 ? ',' : '' %>
+  <%_ }) _%>
+];
+export enum <%= entity.entityModel.name %><%= pageParams.fieldType %>Enum {
+  <%_ strArray.forEach((item, index) => { _%>
+  <%= item %> = '<%= item %>'<%= index < strArray.length - 1 ? ',' : '' %>
+  <%_ }) _%>
+}
+
+export default <%= entity.entityModel.name %><%= pageParams.fieldType %>Enum

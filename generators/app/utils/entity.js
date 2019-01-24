@@ -74,8 +74,14 @@ module.exports = {
             item.sqlFieldType = 'datetime';
             break;
           default:
-            item.jsFieldType = '< ' + item.fieldType + ' >';
-            item.sqlFieldType = '< ' + item.sqlFieldType + ' >';
+            // 如果是个枚举类型
+            if (item.fieldValues) {
+              item.jsFieldType = 'enum';
+              item.sqlFieldType = 'varchar';
+            } else {
+              item.jsFieldType = '< ' + item.fieldType + ' >';
+              item.sqlFieldType = '< ' + item.sqlFieldType + ' >';
+            }
             break;
         }
         // 避免空引用

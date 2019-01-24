@@ -3,7 +3,7 @@ const fs = require('fs');
 const entity = require('./../utils/entity');
 
 function getFileList(options) {
-  return [
+  const list = [
     {
       file: 'entity-model.ts.ejs',
       target: `src/entity/${options.entity.entityClassName}.ts`
@@ -13,6 +13,16 @@ function getFileList(options) {
       target: `src/controller/${options.entity.entityClassName}Action.ts`
     }
   ];
+  options.entity.entityModel.fields.forEach(field => {
+    if (field.jsFieldType === 'enum') {
+      list.push({
+        file: 'entity-enum.ts.ejs',
+        target: `src/enum/${options.entity.entityModel.name}${field.fieldType}Enum.ts`,
+        pageParams: field
+      });
+    }
+  });
+  return list;
 }
 module.exports = {
   generatorFiles(askEntityOptions, generator = Generator) {
@@ -31,9 +41,15 @@ module.exports = {
     const entityJson = generator.fs.readJSON(cwd + '/.jhipster/' + askEntityOptions.entityName + '.json');
     const options = {
       entity: entity.getTemplateParams(entityJson),
-      yoConfig
+      yoConfig,
+      pageParams: null
     }
     getFileList(options).forEach(item => {
+      if (item.pageParams) {
+        options.pageParams = item.pageParams;
+      } else {
+        options.pageParams = null;
+      }
       generator.fs.copyTpl(
         generator.templatePath(templatePath + '/' + item.file),
         generator.destinationPath(cwd + '/' + item.target),
