@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 module.exports = {
   getDirAllFiles(dirPathSource) {
-    const dirPath = dirPathSource.replace(/\\/, '/');
+    const dirPath = dirPathSource.replace(/\\/g, '/');
     const self = this;
     const fileList = [];
     /**
@@ -10,13 +10,13 @@ module.exports = {
      * @param filePath 需要遍历的文件路径
      */
     function fileDisplay(filePathSource) {
-      const filePath = filePathSource.replace(/\\/, '/');
+      const filePath = filePathSource.replace(/\\/g, '/');
       //根据文件路径读取文件，返回文件列表
       const files = fs.readdirSync(filePath);
       //遍历读取到的文件列表
       files.forEach(function (filename) {
         //获取当前文件的绝对路径
-        const filedir = path.join(filePath, filename).replace(/\\/, '/');
+        const filedir = path.join(filePath, filename).replace(/\\/g, '/');
         //根据文件路径获取文件信息，返回一个fs.Stats对象
         const stats = fs.statSync(filedir);
         const isFile = stats.isFile();//是文件
