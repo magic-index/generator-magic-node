@@ -183,7 +183,7 @@ export default class RegionAction {
 
     ```
     curl --request POST \
-    --url http://127.0.0.1:3000/api/regions \
+    --url http://localhost:3000/api/regions \
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: 137cfaa2-bba3-94c6-a73d-858bf899f3c7' \
@@ -191,7 +191,7 @@ export default class RegionAction {
     ```
     ```
     POST /api/regions HTTP/1.1
-    Host: 127.0.0.1:3000
+    Host: localhost:3000
     Content-Type: application/json
     Cache-Control: no-cache
     Postman-Token: ffe8ff8c-f9e2-60be-dc1a-0f7e5e2b2383
@@ -211,7 +211,7 @@ export default class RegionAction {
     请求：
     ```
     curl --request PUT \
-    --url http://127.0.0.1:3000/api/regions \
+    --url http://localhost:3000/api/regions \
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: e4cae952-07bc-0857-73be-9d2099d3954f' \
@@ -219,7 +219,7 @@ export default class RegionAction {
     ```
     ```
     PUT /api/regions HTTP/1.1
-    Host: 127.0.0.1:3000
+    Host: localhost:3000
     Content-Type: application/json
     Cache-Control: no-cache
     Postman-Token: 604881ef-c221-f756-e3c5-6e1e58163b6c
@@ -240,14 +240,14 @@ export default class RegionAction {
     请求：
     ```
     curl --request DELETE \
-    --url http://127.0.0.1:3000/api/regions/1 \
+    --url http://localhost:3000/api/regions/1 \
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: d0bd6631-b56d-3c14-565a-f1a6d14aba47'
     ```
     ```
     DELETE /api/regions/1 HTTP/1.1
-    Host: 127.0.0.1:3000
+    Host: localhost:3000
     Content-Type: application/json
     Cache-Control: no-cache
     Postman-Token: 70b023ea-b101-c46e-9240-90f1909c2107
@@ -262,14 +262,14 @@ export default class RegionAction {
     请求：
     ```
     curl --request GET \
-    --url http://127.0.0.1:3000/api/regions/1 \
+    --url http://localhost:3000/api/regions/1 \
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: 32045bad-4ed5-fbfa-4a7f-9b2686eb3891'
     ```
     ```
     GET /api/regions/1 HTTP/1.1
-    Host: 127.0.0.1:3000
+    Host: localhost:3000
     Content-Type: application/json
     Cache-Control: no-cache
     Postman-Token: ca50cf1d-7e72-70a2-37c8-037bfcc5893f
@@ -286,14 +286,14 @@ export default class RegionAction {
     请求：
     ```
     curl --request GET \
-    --url 'http://127.0.0.1:3000/api/_search/regions?query=regionName%3AJP&page=0&size=10' \
+    --url 'http://localhost:3000/api/_search/regions?query=regionName%3AJP&page=0&size=10' \
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: 12afa220-9d89-6f7c-97b9-1dde9f4c8c85'
     ```
     ```
     GET /api/_search/regions?query=regionName:JP&amp;page=0&amp;size=10 HTTP/1.1
-    Host: 127.0.0.1:3000
+    Host: localhost:3000
     Content-Type: application/json
     Cache-Control: no-cache
     Postman-Token: 260f20fc-4697-51a1-38cb-ceeb4259ea23
@@ -306,6 +306,77 @@ export default class RegionAction {
             "regionName": "JP"
         }
     ]
+    ```
+# 登录与鉴权 
+授权使用 JWT 协议，其接口与 jhipster 的 JWT 授权登录接口一样  
+* 获取 Token  
+    请求：
+    ```
+    curl --request POST \
+    --url http://localhost:3000/api/authenticate \
+    --header 'cache-control: no-cache' \
+    --header 'content-type: application/json' \
+    --header 'postman-token: dd8547b8-5c18-e5b1-e0e9-621de99914f1' \
+    --data '{\n	"password": "admin",\n	"username": "admin"\n}'
+    ```
+    ```
+    POST /api/authenticate HTTP/1.1
+    Host: localhost:3000
+    Content-Type: application/json
+    Cache-Control: no-cache
+    Postman-Token: 53e4cacc-d444-ed3c-be50-c107693b8d1e
+
+    {
+	    "password": "admin",
+	    "username": "admin"
+    }
+    ```
+    响应：
+    ```
+    {
+        "id_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjozLCJsb2dpbiI6ImFkbWluIiwiZmlyc3ROYW1lIjoiQWRtaW5pc3RyYXRvciIsImxhc3ROYW1lIjoiQWRtaW5pc3RyYXRvciIsImVtYWlsIjoiYWRtaW5AbG9jYWxob3N0IiwiaW1hZ2VVcmwiOiJodHRwczovL3dwaW1nLndhbGxzdGNuLmNvbS9mNzc4NzM4Yy1lNGY4LTQ4NzAtYjYzNC01NjcwM2I0YWNhZmUuZ2lmP2ltYWdlVmlldzIvMS93LzgwL2gvODAiLCJhY3RpdmF0ZWQiOjEsImxhbmdLZXkiOiJlbiIsImFjdGl2YXRpb25LZXkiOm51bGwsInJlc2V0S2V5IjpudWxsLCJjcmVhdGVkQnkiOiJzeXN0ZW0iLCJjcmVhdGVkRGF0ZSI6bnVsbCwicmVzZXREYXRlIjpudWxsLCJsYXN0TW9kaWZpZWRCeSI6InN5c3RlbSIsImxhc3RNb2RpZmllZERhdGUiOm51bGx9LCJhdXRob3JpdGllcyI6WyJST0xFX0FETUlOIiwiUk9MRV9VU0VSIl0sImlhdCI6MTU0ODM5OTQzNCwiZXhwIjoxNTQ5Njk1NDM0fQ.9y9YOKtJaT33T56A2mKKrSeI0ojCmUFPU5JxvLNR3ds"
+    }
+    ```
+* 获取账号信息  
+    请求： 
+    ```
+    curl --request GET \
+    --url http://localhost:3000/api/account \
+    --header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjozLCJsb2dpbiI6ImFkbWluIiwiZmlyc3ROYW1lIjoiQWRtaW5pc3RyYXRvciIsImxhc3ROYW1lIjoiQWRtaW5pc3RyYXRvciIsImVtYWlsIjoiYWRtaW5AbG9jYWxob3N0IiwiaW1hZ2VVcmwiOiJodHRwczovL3dwaW1nLndhbGxzdGNuLmNvbS9mNzc4NzM4Yy1lNGY4LTQ4NzAtYjYzNC01NjcwM2I0YWNhZmUuZ2lmP2ltYWdlVmlldzIvMS93LzgwL2gvODAiLCJhY3RpdmF0ZWQiOjEsImxhbmdLZXkiOiJlbiIsImFjdGl2YXRpb25LZXkiOm51bGwsInJlc2V0S2V5IjpudWxsLCJjcmVhdGVkQnkiOiJzeXN0ZW0iLCJjcmVhdGVkRGF0ZSI6bnVsbCwicmVzZXREYXRlIjpudWxsLCJsYXN0TW9kaWZpZWRCeSI6InN5c3RlbSIsImxhc3RNb2RpZmllZERhdGUiOm51bGx9LCJhdXRob3JpdGllcyI6WyJST0xFX0FETUlOIiwiUk9MRV9VU0VSIl0sImlhdCI6MTU0ODM5OTQzNCwiZXhwIjoxNTQ5Njk1NDM0fQ.9y9YOKtJaT33T56A2mKKrSeI0ojCmUFPU5JxvLNR3ds' \
+    --header 'cache-control: no-cache' \
+    --header 'postman-token: bc7974d7-c9ff-8ccb-1037-0efdb099db88'
+    ```
+    ```
+    GET /api/account HTTP/1.1
+    Host: localhost:3000
+    Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjozLCJsb2dpbiI6ImFkbWluIiwiZmlyc3ROYW1lIjoiQWRtaW5pc3RyYXRvciIsImxhc3ROYW1lIjoiQWRtaW5pc3RyYXRvciIsImVtYWlsIjoiYWRtaW5AbG9jYWxob3N0IiwiaW1hZ2VVcmwiOiJodHRwczovL3dwaW1nLndhbGxzdGNuLmNvbS9mNzc4NzM4Yy1lNGY4LTQ4NzAtYjYzNC01NjcwM2I0YWNhZmUuZ2lmP2ltYWdlVmlldzIvMS93LzgwL2gvODAiLCJhY3RpdmF0ZWQiOjEsImxhbmdLZXkiOiJlbiIsImFjdGl2YXRpb25LZXkiOm51bGwsInJlc2V0S2V5IjpudWxsLCJjcmVhdGVkQnkiOiJzeXN0ZW0iLCJjcmVhdGVkRGF0ZSI6bnVsbCwicmVzZXREYXRlIjpudWxsLCJsYXN0TW9kaWZpZWRCeSI6InN5c3RlbSIsImxhc3RNb2RpZmllZERhdGUiOm51bGx9LCJhdXRob3JpdGllcyI6WyJST0xFX0FETUlOIiwiUk9MRV9VU0VSIl0sImlhdCI6MTU0ODM5OTQzNCwiZXhwIjoxNTQ5Njk1NDM0fQ.9y9YOKtJaT33T56A2mKKrSeI0ojCmUFPU5JxvLNR3ds
+    Cache-Control: no-cache
+    Postman-Token: 0697e795-506d-fb51-f35a-cf6009437a8d
+
+    ```
+    响应：
+    ```
+    {
+        "id": 3,
+        "login": "admin",
+        "firstName": "Administrator",
+        "lastName": "Administrator",
+        "email": "admin@localhost",
+        "imageUrl": "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80",
+        "activated": 1,
+        "langKey": "en",
+        "activationKey": null,
+        "resetKey": null,
+        "createdBy": "system",
+        "createdDate": null,
+        "resetDate": null,
+        "lastModifiedBy": "system",
+        "lastModifiedDate": null,
+        "authorities": [
+            "ROLE_ADMIN",
+            "ROLE_USER"
+        ]
+    }
     ```
 
 # 技术栈  
