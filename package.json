@@ -1,6 +1,6 @@
 {
   "name": "generator-magic-node",
-  "version": "0.1.0-dev.11",
+  "version": "0.1.0-dev.12",
   "description": "nodejs project generator.",
   "repository": {
     "type": "git",

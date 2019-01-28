@@ -53,14 +53,14 @@ export class AppRoutes {
             error ? reject(error) : resolve(decoded);
           });
         });
-        if (decoded.authorities && decoded.authorities.indexOf(route.authority) === -1) {
+        if (decoded.authoritys && decoded.authoritys.indexOf(route.authority) === -1) {
           context.status = 403;
           context.body = {
             title: 'Permission denied',
             msg: '权限不足'
           };
         } else {
-          await route.action(context, decoded);
+          await this.action(route, context, decoded);
         }
       } catch (e) {
         context.status = 401;
@@ -70,7 +70,17 @@ export class AppRoutes {
         };
       }
     } else {
-      await route.action(context);
+      await this.action(route, context);
+    }
+  }
+
+  private static async action(route: Route, context: Context, decoded?: Object) {
+    try {
+      await route.action(context, decoded);
+    } catch (err) {
+      context.status = 500;
+      context.body = err;
+      throw err;
     }
   }
 }
