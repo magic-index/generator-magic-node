@@ -1,6 +1,6 @@
 {
   "name": "generator-magic-node",
-  "version": "0.1.0-dev.12",
+  "version": "0.1.0-dev.13",
   "description": "nodejs project generator.",
   "repository": {
     "type": "git",
@@ -11,7 +11,12 @@
     "generators"
   ],
   "keywords": [
-    "yeoman-generator"
+    "yeoman-generator",
+    "generator node",
+    "generator",
+    "node",
+    "koa",
+    "typeorm"
   ],
   "dependencies": {
     "chalk": "^2.4.1",
