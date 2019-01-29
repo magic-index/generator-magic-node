@@ -1,10 +1,14 @@
 {
   "name": "generator-magic-node",
-  "version": "0.1.0-dev.13",
+  "version": "0.1.0-dev.15",
   "description": "nodejs project generator.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/little-snow-fox/generator-magic-node"
+  },
+  "author": {
+    "name": "snowfox",
+    "email": "fox@sfxh.cc"
   },
   "license": "MIT",
   "files": [

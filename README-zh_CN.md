@@ -5,51 +5,50 @@
 </a>
 </p>
 <div align="center">
-    English | <a href="./README-zh_CN.md">简体中文</a>
+    <a href="./README.md">English</a> | 简体中文
 </div>
 
-# Describe    
-This is a node back-end service generator that generates scaffolding and entity classes.   
+# 描述   
+一个 node 后端服务生成器，能够生成脚手架和实体类。  
+为了保证一套前端项目所需要的后台能在 jhipster 与 nodejs 之间无缝切换，所以接口规范与 jhipster 尽量地保持一致，包括授权与鉴权方式。
 
-In order to ensure that the background required for a set of front-end projects can switch seamlessly between jhipster and nodejs, the interface specification and jhipster are as consistent as possible, including authorization and authentication methods.
-
-# Conditions  
-1. yeoman needs to be installed.
+# 条件  
+1. 依赖 yeoman
 ```
 npm install -g yo
 ```
-2. The entity class generation section requires the JSON file generated using [JDL], Students who are not familiar with [JDL](https://www.jhipster.tech/jdl) can find relevant documents and help on [jhipster](https://www.jhipster.tech) official website.  
+2. 实体类生成部分需要使用 [JDL](https://www.jhipster.tech/jdl) 生成出来的 JSON 文件，对 [JDL](https://www.jhipster.tech/jdl) 不熟悉的同学可以到 [jhipster](https://www.jhipster.tech) 官网查找相关文档  
 ```
 npm install -g generator-jhipster
 ```
 
-# Install      
+# 安装    
 ```
 npm install -g generator-magic-node
 ```
 
-# Use    
-* Generating scaffold.
+# 使用  
+* 生成脚手架
 ```
 mkdir node-project
 cd node-project
 yo magic-node
 ```
 
-* Generating entity classes.
-1. Please go to [jdl-studio](https://start.jhipster.tech/jdl-studio) to write the data table and export it to the project root directory. For example, the file I exported is jhipster-jdl.jh
+* 生成实体类  
+1. 请到 [jdl-studio](https://start.jhipster.tech/jdl-studio) 编写好数据表结构，并导出到项目根目录，例如我导出的文件是 jhipster-jdl.jh
     ```
         cp jhipster-jdl.jh node-project/jhipster-jdl.jh
         cd node-project
         jhipster import-jdl jhipster-jdl.jh
     ```
-    After successful execution, .jhipster folder will appear in the current project file directory.
+    执行成功后，当前项目文件目录下会出现一个 .jhipster 文件夹，里面包含了后续需要使用的数据模型配置文件  
 
-2. Execute the command to generate the entity class.
+2. 执行命令生成实体类
     ```
     yo magic-node --lang=zh --entity=Region
     ```
-    Or
+    或者
     ```
     yo magic-node
     language[en/zh/ja] en
@@ -57,11 +56,11 @@ yo magic-node
     Entity name: Region
     ```
 
-# Directory structure
+# 目录结构
 ```
 .directory
 .gitignore
-.jhipster   # Data model config.
+.jhipster   # 数据模型配置文件
 │-- Region.json 
 .yo-rc.json
 README.md
@@ -69,18 +68,18 @@ config.json
 ormconfig.json
 package.json
 src
-│-- controller  # Control layer, interface entry.
-│-- entity  # Entity layer, data model class location.
-│-- enum  # Enum class.
+│-- controller  # 控制层，接口入口
+│-- entity  # 实体层，数据模型类位置
+│-- enum  # 枚举对象
 │-- index.ts
 │-- middleware
 │-- migration
-│-- sample  # Sample data for automatically creating template data at project startup.
+│-- sample  # 样本数据，用于在项目启动的时候自动创建模版数据
 │-- subscriber
 │-- util
 tsconfig.json
 ```
-# Generated control layer example
+# 生成出来的控制层例子
 ```
 import { Context } from 'koa';
 import { getManager } from 'typeorm';
@@ -181,9 +180,9 @@ export default class RegionAction {
 
 ``` 
 
-# Interface example
-* Create  
-    Request:
+# 接口例子 
+* 创建  
+    请求：
 
     ```
     curl --request POST \
@@ -204,15 +203,15 @@ export default class RegionAction {
         "regionName": "CN"
     }
     ```
-    Response:
+    响应：
     ```
     {
         "regionName": "CN",
         "id": 1
     }
     ```
-* Change  
-    Request:
+* 修改  
+    请求：
     ```
     curl --request PUT \
     --url http://localhost:3000/api/regions \
@@ -233,15 +232,15 @@ export default class RegionAction {
 	    "regionName": "JP"
     }
     ```
-    Response:
+    响应：
     ```
     {
         "id": 1,
         "regionName": "JP"
     }
     ```
-* Delete  
-    Request:
+* 删除  
+    请求：
     ```
     curl --request DELETE \
     --url http://localhost:3000/api/regions/1 \
@@ -256,14 +255,14 @@ export default class RegionAction {
     Cache-Control: no-cache
     Postman-Token: 70b023ea-b101-c46e-9240-90f1909c2107
     ```
-    Response:
+    响应：
     ```
     {
         "id": "2"
     }
     ```
-* get  
-    Request:
+* 获取  
+    请求：
     ```
     curl --request GET \
     --url http://localhost:3000/api/regions/1 \
@@ -279,15 +278,15 @@ export default class RegionAction {
     Postman-Token: ca50cf1d-7e72-70a2-37c8-037bfcc5893f
 
     ```
-    Response:
+    响应：
     ```
     {
         "id": 1,
         "regionName": "CN"
     }
     ```
-* Search (Enable elasticsearch)  
-    Request:
+* 查询 (启用 Elasticsearch 的时候)  
+    请求：
     ```
     curl --request GET \
     --url 'http://localhost:3000/api/_search/regions?query=regionName%3AJP&page=0&size=10' \
@@ -302,7 +301,7 @@ export default class RegionAction {
     Cache-Control: no-cache
     Postman-Token: 260f20fc-4697-51a1-38cb-ceeb4259ea23
     ```
-    Response:
+    响应：
     ```
     [
         {
@@ -311,10 +310,10 @@ export default class RegionAction {
         }
     ]
     ```
-# Login 
-Authorize the use of the JWT protocol, The interface is the same as jhipster's JWT authorized login interface.
-* Get Token  
-    Request:
+# 登录与鉴权 
+授权使用 JWT 协议，其接口与 jhipster 的 JWT 授权登录接口一样  
+* 获取 Token  
+    请求：
     ```
     curl --request POST \
     --url http://localhost:3000/api/authenticate \
@@ -335,14 +334,14 @@ Authorize the use of the JWT protocol, The interface is the same as jhipster's J
 	    "username": "admin"
     }
     ```
-    Response:
+    响应：
     ```
     {
         "id_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjozLCJsb2dpbiI6ImFkbWluIiwiZmlyc3ROYW1lIjoiQWRtaW5pc3RyYXRvciIsImxhc3ROYW1lIjoiQWRtaW5pc3RyYXRvciIsImVtYWlsIjoiYWRtaW5AbG9jYWxob3N0IiwiaW1hZ2VVcmwiOiJodHRwczovL3dwaW1nLndhbGxzdGNuLmNvbS9mNzc4NzM4Yy1lNGY4LTQ4NzAtYjYzNC01NjcwM2I0YWNhZmUuZ2lmP2ltYWdlVmlldzIvMS93LzgwL2gvODAiLCJhY3RpdmF0ZWQiOjEsImxhbmdLZXkiOiJlbiIsImFjdGl2YXRpb25LZXkiOm51bGwsInJlc2V0S2V5IjpudWxsLCJjcmVhdGVkQnkiOiJzeXN0ZW0iLCJjcmVhdGVkRGF0ZSI6bnVsbCwicmVzZXREYXRlIjpudWxsLCJsYXN0TW9kaWZpZWRCeSI6InN5c3RlbSIsImxhc3RNb2RpZmllZERhdGUiOm51bGx9LCJhdXRob3JpdGllcyI6WyJST0xFX0FETUlOIiwiUk9MRV9VU0VSIl0sImlhdCI6MTU0ODM5OTQzNCwiZXhwIjoxNTQ5Njk1NDM0fQ.9y9YOKtJaT33T56A2mKKrSeI0ojCmUFPU5JxvLNR3ds"
     }
     ```
-* Get Account info  
-    Request: 
+* 获取账号信息  
+    请求： 
     ```
     curl --request GET \
     --url http://localhost:3000/api/account \
@@ -358,7 +357,7 @@ Authorize the use of the JWT protocol, The interface is the same as jhipster's J
     Postman-Token: 0697e795-506d-fb51-f35a-cf6009437a8d
 
     ```
-    Response:
+    响应：
     ```
     {
         "id": 3,
@@ -383,7 +382,7 @@ Authorize the use of the JWT protocol, The interface is the same as jhipster's J
     }
     ```
 
-# Technology stack   
+# 技术栈  
 
 <a href="https://nodejs.org">
     <img src="https://raw.githubusercontent.com/little-snow-fox/images/master/logos/node.png" width="20%">

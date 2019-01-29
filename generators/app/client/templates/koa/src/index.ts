@@ -13,25 +13,33 @@ import {Eureka} from 'eureka-js-client';
 import ImportSampleData from './sample/ImportSampleData';
 
 showLogo();
-// create koa app
+// Create koa app
+// 创建 koa 应用
 const app = new Koa();
+// Read the configuration file into the global cache
 // 读取配置文件到全局缓存区
 const config: ConfigType = Cache.config = JSON.parse(fs.readFileSync('./config.json').toString());
+// Scan and load all actions
 // 扫描加载所有 Action
 scanControllerFiles(() => {
+  // Initialize the Eureka
   // 初始化 Eureka
   initEureka();
 });
+// Middleware that parses the body
 // 解析 body 的中间件
 app.use(bodyParser());
-// 错误拦截的中间件
+// Intercepting the wrong middleware
+// 拦截错误的中间件
 app.use(requestError());
+// Middleware that handles routing
 // 路由解析的中间件
 app.use(AppRoutes.router.routes());
 app.use(AppRoutes.router.allowedMethods());
 app.listen(Cache.config.port);
 console.log(`Koa application is up and running on port ${Cache.config.port}`);
 
+// Open elastic search connection
 // 打开 elastic 连接
 if (Cache.config.elastic.enable) {
   Elastic.connect();
@@ -46,10 +54,8 @@ if (Cache.config.elastic.enable) {
   });
 }
 
+// create connection with mysql database
 // 打开mysql连接
-// create connection with database
-// note that its not active database connection
-// TypeORM creates you connection pull to uses connections from pull on your requests
 createConnection().then(async connection => {
   console.log(`Successfully connected mysql db.`);
   if (Cache.config.sampleData.enable) {

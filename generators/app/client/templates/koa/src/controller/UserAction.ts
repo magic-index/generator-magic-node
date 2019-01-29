@@ -13,6 +13,7 @@ import * as MD5 from 'md5';
 
 export default class UserAction {
   /**
+   * Use the account password to get Token
    * 使用账号获取JWT Token
    * @param {Application.Context} context
    * @param decoded
@@ -54,7 +55,7 @@ export default class UserAction {
         user: user,
         authorities
       }, Cache.config.jwtSecret, {
-        expiresIn:  1296000 //秒到期时间(15天)
+        expiresIn:  1296000 // 1296000 seconds to (15 days). 秒到期时间(15天)
       });
       // user: users[0],
       context.body = {
