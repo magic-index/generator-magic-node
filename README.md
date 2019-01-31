@@ -268,10 +268,10 @@ export default class RegionAction {
     Response:
     ```
     {
-        "id": "2"
+        "id": "1"
     }
     ```
-* get  
+* Get  
     Request:
     ```
     curl --request GET \
@@ -295,28 +295,86 @@ export default class RegionAction {
         "regionName": "CN"
     }
     ```
-* Search (Enable elasticsearch)  
-    Request:
+* Search (use Elasticsearch)  
+    Query parameters:    
+    * query: Query string, please go to [elastic](https://www.elastic.co) for relevant documents.
+    * page: Page index, Starting from the 0, default 0.
+    * size: Page size, default 0.
+    * sort: Sort，Please go to [elastic](https://www.elastic.co) for relevant documents.
+
+    Request:  
     ```
     curl --request GET \
-    --url 'http://localhost:3000/api/_search/regions?query=regionName%3AJP&page=0&size=10' \
+    --url 'http://localhost:3000/api/_search/regions?query=regionName%3ACN&page=0&size=10' \
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: 12afa220-9d89-6f7c-97b9-1dde9f4c8c85'
     ```
     ```
-    GET /api/_search/regions?query=regionName:JP&amp;page=0&amp;size=10 HTTP/1.1
+    GET /api/_search/regions?query=regionName:CN&amp;page=0&amp;size=10 HTTP/1.1
     Host: localhost:3000
     Content-Type: application/json
     Cache-Control: no-cache
     Postman-Token: 260f20fc-4697-51a1-38cb-ceeb4259ea23
     ```
-    Response:
+    Response:    
+    header  
+    ```
+    x-page: 0
+    x-size: 10
+    x-total-count: 1
+    ```
+    body  
     ```
     [
         {
             "id": 1,
-            "regionName": "JP"
+            "regionName": "CN"
+        }
+    ]
+    ```
+* Search (use Mysql)  
+    Query parameters:   
+    * *.equals: Condition, example: regionName.equals=CN.
+    * *.contains: Condition.
+    * *.in: Condition, example.in=1,2,3.
+    * *.specified: Condition, example: name.specified=true.
+    * *.greaterOrEqualThan: Condition, example: id.greaterOrEqualThan=2.
+    * *.greaterThan: Condition.
+    * *.lessOrEqualThan: Condition.
+    * *.lessThan: Condition.
+    * page: Page index, Starting from the 0, default 0.
+    * size: Page size, default 0.
+    * sort: Sort, example: sort=id,DESC&sort=regionName,ASC
+
+    Request:  
+    ```
+    curl --request GET \
+    --url 'http://localhost:3000/api/_search/regions?regionName.equals=CN&sort=id%2CDESC&page=0&size=10' \
+    --header 'cache-control: no-cache' \
+    --header 'content-type: application/json' \
+    --header 'postman-token: 2bee9d1e-d406-a8fc-47fb-01f0cd5a661a'
+    ```
+    ```
+    GET /api/_search/regions?regionName.equals=CN&amp;sort=id,DESC&amp;page=0&amp;size=10 HTTP/1.1
+    Host: localhost:3000
+    Content-Type: application/json
+    Cache-Control: no-cache
+    Postman-Token: 88a2fc33-7d21-7395-ee59-d09c2399c571
+    ```
+    Response:    
+    header  
+    ```
+    x-page: 0
+    x-size: 10
+    x-total-count: 1
+    ```
+    body  
+    ```
+    [
+        {
+            "id": 1,
+            "regionName": "CN"
         }
     ]
     ```

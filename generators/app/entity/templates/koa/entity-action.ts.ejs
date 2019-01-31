@@ -6,7 +6,7 @@ import { validate } from 'class-validator';
 import Elastic from '../util/Elastic';
 <%_ } _%>
 import { setRoute, RequestMethod } from '../middleware/Routes';
-import { <%= yoConfig.searchEngine === 'elasticsearch' ? 'getElasticSearchParams, setElasticSearchPagingHeader, ' : '' %>deleteSuccessfulResponse, getRequestParamId } from '../util/Tools';
+import { <%= yoConfig.searchEngine === 'elasticsearch' ? 'getElasticSearchParams, setElasticSearchPagingHeader, ' : 'setSqlSearchPagingHeader, getSqlSearchPagingParams, getSearchSqlQueryBuilder, ' %>deleteSuccessfulResponse, getRequestParamId } from '../util/Tools';
 import { BadRequestAlertException, NotFoundAlertException } from '../middleware/RequestError';
 
 export default class <%= entity.entityClassName %>Action {
@@ -114,7 +114,19 @@ export default class <%= entity.entityClassName %>Action {
     setElasticSearchPagingHeader(context, res);
     context.body = res.data;
     <%_ } else if (yoConfig.searchEngine === 'mysql') { _%>
-    // todo: The code template for using mysql search is not yet complete, please implement it manually for now.
+    const fields = [
+      <%_ entity.entityModel.fields.forEach(function(item) { _%>
+      '<%= item.fieldName %>',
+      <%_ }) _%>
+    ];
+    const repository = getSearchSqlQueryBuilder(<%= entity.entityClassName %>, context.request.query, fields);
+    const count = await repository.getCount();
+    const pagingParams = getSqlSearchPagingParams(context);
+    repository.skip(pagingParams.page).take(pagingParams.size);
+    pagingParams.sort.forEach(item => repository.addOrderBy(item.field, item.value));
+    const list = await repository.getMany();
+    setSqlSearchPagingHeader(context, count);
+    context.body = list;
     <%_ } _%>
   }
 }

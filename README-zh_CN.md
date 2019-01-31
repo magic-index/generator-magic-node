@@ -267,7 +267,7 @@ export default class RegionAction {
     响应：
     ```
     {
-        "id": "2"
+        "id": "1"
     }
     ```
 * 获取  
@@ -287,35 +287,93 @@ export default class RegionAction {
     Postman-Token: ca50cf1d-7e72-70a2-37c8-037bfcc5893f
 
     ```
-    响应：
+    响应：  
     ```
     {
         "id": 1,
         "regionName": "CN"
     }
     ```
-* 查询 (启用 Elasticsearch 的时候)  
+* 查询 (使用 Elasticsearch 的时候)  
+    参数：  
+    * query: 查询语句，详情请到 [elastic](https://www.elastic.co) 查找相关文档  
+    * page: 页数，从 0 开始，默认 0 
+    * size: 每页大小，默认 10  
+    * sort: 排序，详细用法请参见 elastic 文档
+
     请求：
     ```
     curl --request GET \
-    --url 'http://localhost:3000/api/_search/regions?query=regionName%3AJP&page=0&size=10' \
+    --url 'http://localhost:3000/api/_search/regions?query=regionName%3ACN&page=0&size=10' \
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: 12afa220-9d89-6f7c-97b9-1dde9f4c8c85'
     ```
     ```
-    GET /api/_search/regions?query=regionName:JP&amp;page=0&amp;size=10 HTTP/1.1
+    GET /api/_search/regions?query=regionName:CN&amp;page=0&amp;size=10 HTTP/1.1
     Host: localhost:3000
     Content-Type: application/json
     Cache-Control: no-cache
     Postman-Token: 260f20fc-4697-51a1-38cb-ceeb4259ea23
     ```
-    响应：
+    响应：  
+    header  
+    ```
+    x-page: 0
+    x-size: 10
+    x-total-count: 1
+    ```
+    body  
     ```
     [
         {
             "id": 1,
-            "regionName": "JP"
+            "regionName": "CN"
+        }
+    ]
+    ```
+* 查询 (使用 Mysql 的时候)  
+    参数：  
+    * *.equals: 条件，全等判断，例如：regionName.equals=CN
+    * *.contains: 条件，包含判断
+    * *.in: 条件，数组包含判断，例如：id.in=1,2,3  
+    * *.specified: 条件，真假判断，例如：name.specified=true
+    * *.greaterOrEqualThan: 条件，大于等于，例如：id.greaterOrEqualThan=2  
+    * *.greaterThan: 条件，大于
+    * *.lessOrEqualThan: 条件，小于等于
+    * *.lessThan: 条件，小于
+    * page: 页数，从 0 开始，默认 0 
+    * size: 每页大小，默认 10  
+    * sort: 排序，例如：sort=id,DESC&sort=regionName,ASC
+
+    请求：
+    ```
+    curl --request GET \
+    --url 'http://localhost:3000/api/_search/regions?regionName.equals=CN&sort=id%2CDESC&page=0&size=10' \
+    --header 'cache-control: no-cache' \
+    --header 'content-type: application/json' \
+    --header 'postman-token: 2bee9d1e-d406-a8fc-47fb-01f0cd5a661a'
+    ```
+    ```
+    GET /api/_search/regions?regionName.equals=CN&amp;sort=id,DESC&amp;page=0&amp;size=10 HTTP/1.1
+    Host: localhost:3000
+    Content-Type: application/json
+    Cache-Control: no-cache
+    Postman-Token: 88a2fc33-7d21-7395-ee59-d09c2399c571
+    ```
+    响应：  
+    header  
+    ```
+    x-page: 0
+    x-size: 10
+    x-total-count: 1
+    ```
+    body  
+    ```
+    [
+        {
+            "id": 1,
+            "regionName": "CN"
         }
     ]
     ```

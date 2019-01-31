@@ -79,7 +79,16 @@ export class AppRoutes {
       await route.action(context, decoded);
     } catch (err) {
       context.status = 500;
-      context.body = err;
+      if (err.sql || err.query) {
+        const res = {
+          ...err,
+          sql: 'Shielding for security reasons.',
+          query: 'Shielding for security reasons.'
+        };
+        context.body = res;
+      } else {
+        context.body = err;
+      }
       throw err;
     }
   }
