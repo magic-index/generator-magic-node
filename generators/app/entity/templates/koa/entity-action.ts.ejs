@@ -118,6 +118,11 @@ export default class <%= entity.entityClassName %>Action {
       <%_ entity.entityModel.fields.forEach(function(item) { _%>
       '<%= item.fieldName %>',
       <%_ }) _%>
+      <%_ entity.entityModel.relationships.forEach(item => { _%>
+      <%_   if (item.relationshipType === 'many-to-one' || item.relationshipType === 'one-to-one') { _%>
+      '<%= item.relationshipName %>Id',
+      <%_   } _%>
+      <%_ }) _%>
     ];
     const repository = getSearchSqlQueryBuilder(<%= entity.entityClassName %>, context.request.query, fields);
     const count = await repository.getCount();

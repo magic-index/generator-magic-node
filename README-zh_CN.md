@@ -64,6 +64,12 @@ yo magic-node
     What generates? Entity class
     Entity name: Region
     ```
+3. 运行项目
+    ```
+    npm install tsc -g
+    npm install
+    npm run start
+    ```
 
 # 目录结构
 ```

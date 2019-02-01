@@ -65,6 +65,12 @@ yo magic-node
     What generates? Entity class
     Entity name: Region
     ```
+3. Run project.
+    ```
+    npm install tsc -g
+    npm install
+    npm run start
+    ```
 
 # Directory structure
 ```
