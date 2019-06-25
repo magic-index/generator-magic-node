@@ -4,6 +4,7 @@ import * as Koa from 'koa';
 import * as bodyParser from 'koa-bodyparser';
 import * as fs from 'fs';
 const chalk = require('chalk');
+const path = require('path');
 import Cache, { ConfigType } from './util/Cache';
 import Elastic from './util/Elastic';
 import {AppRoutes} from "./middleware/Routes";
@@ -16,9 +17,11 @@ showLogo();
 // Create koa app
 // 创建 koa 应用
 const app = new Koa();
+// 绝对路径
+const PUBLIC_PATH = path.resolve(__dirname, '../config.json')
 // Read the configuration file into the global cache
 // 读取配置文件到全局缓存区
-const config: ConfigType = Cache.config = JSON.parse(fs.readFileSync('./config.json').toString());
+const config: ConfigType = Cache.config = JSON.parse(fs.readFileSync(PUBLIC_PATH).toString());
 // Scan and load all actions
 // 扫描加载所有 Action
 scanControllerFiles(() => {
