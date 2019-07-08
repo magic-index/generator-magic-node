@@ -17,7 +17,7 @@ function getFileList(options) {
     if (field.jsFieldType === 'enum') {
       list.push({
         file: 'entity-enum.ts.ejs',
-        target: `src/enum/${options.entity.entityModel.name}${field.fieldType}Enum.ts`,
+        target: `src/enum/${field.fieldType}Enum.ts`,
         pageParams: field
       });
     }
