@@ -73,6 +73,18 @@ module.exports = {
             item.jsFieldType = 'Date';
             item.sqlFieldType = 'datetime';
             break;
+          case 'TextBlob':
+            item.jsFieldType = 'String';
+            item.sqlFieldType = 'text';
+            break;
+          case 'ImageBlob':
+            item.jsFieldType = 'Buffer';
+            item.sqlFieldType = 'blob';
+            break;
+          case 'Blob':
+            item.jsFieldType = 'Buffer';
+            item.sqlFieldType = 'blob';
+            break;
           default:
             // 如果是个枚举类型
             if (item.fieldValues) {

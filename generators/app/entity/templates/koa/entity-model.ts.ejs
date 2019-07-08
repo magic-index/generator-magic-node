@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, JoinColumn<%_ entity.entityMode
 import * as Validator from 'class-validator';
 <%_ entity.entityModel.fields.forEach(item => { _%>
 <%_   if (item.jsFieldType === 'enum') { _%>
-import { <%= entity.entityModel.name %><%= item.fieldType %>Enum, <%= entity.entityModel.name %><%= item.fieldType %>Array } from './../enum/<%= entity.entityModel.name %><%= item.fieldType %>Enum';
+import { <%= item.fieldType %>Enum, <%= item.fieldType %>Array } from './../enum/<%= item.fieldType %>Enum';
 <%_   } _%>
 <%_ }) _%>
 <%_ entity.entityModel.relationshipsEntityList.forEach(item => { 
@@ -40,10 +40,10 @@ export default class <%= entity.entityClassName %> {
   @Validator.MaxLength(<%= item.fieldValidateRulesMaxlength %>)
   <%_ } _%>
   <%_ if (item.fieldValues) { _%>
-  @Validator.IsIn(<%= entity.entityModel.name %><%= item.fieldType %>Array)
+  @Validator.IsIn(<%= item.fieldType %>Array)
   <%_ } _%>
   <%_ if (item.jsFieldType === 'enum') { _%>
-  <%= item.fieldName %>: <%= entity.entityModel.name %><%= item.fieldType %>Enum;
+  <%= item.fieldName %>: <%= item.fieldType %>Enum;
   <%_ } else { _%>
   <%= item.fieldName %>: <%= item.jsFieldType %>;
   <%_ } _%>
