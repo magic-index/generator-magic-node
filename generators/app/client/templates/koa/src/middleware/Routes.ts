@@ -53,7 +53,7 @@ export class AppRoutes {
             error ? reject(error) : resolve(decoded);
           });
         });
-        if (decoded.authoritys && decoded.authoritys.indexOf(route.authority) === -1) {
+        if (decoded.authorities && !decoded.authorities.includes(route.authority)) {
           context.status = 403;
           context.body = {
             title: 'Permission denied',
