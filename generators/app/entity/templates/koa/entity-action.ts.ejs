@@ -110,7 +110,7 @@ export default class <%= entity.entityClassName %>Action {
   @setRoute('/api/_search/<%= entity.entityFolderNamePlural %>')
   async search<%= entity.entityClassName %>(context: Context, decoded?: any) {
     <%_ if (yoConfig.searchEngine === 'elasticsearch') { _%>      
-    const res: any = await Elastic.search(getElasticSearchParams(context), '<%= entity.entityCamelName %>');
+    const res: any = await Elastic.search(getElasticSearchParams(context), '<%= entity.entityModel.entityTableName %>');
     setElasticSearchPagingHeader(context, res);
     context.body = res.data;
     <%_ } else if (yoConfig.searchEngine === 'mysql') { _%>

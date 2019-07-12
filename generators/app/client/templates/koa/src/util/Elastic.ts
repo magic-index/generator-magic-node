@@ -1,6 +1,6 @@
 import * as elasticsearch from 'elasticsearch';
 import Cache from './Cache';
-import {getConnection} from "typeorm";
+import {getConnection} from 'typeorm';
 
 export default class Elastic {
   static client: Client;
@@ -13,14 +13,9 @@ export default class Elastic {
   static async mysqlSyncToElastic() {
     console.log('Start synchronizing mysql data to elasticsearch.');
     const connect = getConnection();
-    try {
-      await this.client.deleteByQuery({
-        index: connect.options.database,
-        q: '*:*'
-      });
-    } catch (e) {
-
-    }
+    await this.client.indices.delete({
+      index: '_all'
+    });
 
     await connect.entityMetadatas.forEach(async (item) => {
        if (item.tableType === 'regular') {
@@ -28,7 +23,7 @@ export default class Elastic {
          list.forEach((data: any) => {
            if (data.id) {
              this.client.create({
-               index: connect.options.database,
+               index: item.tableName,
                type: item.tableName,
                id: data.id,
                body: data,
@@ -43,7 +38,7 @@ export default class Elastic {
     const connect = getConnection();
     const data: any = (await connect.query(`select * from \`${tableName}\` where id = ${id}`))[0];
     return await this.client.create({
-      index: connect.options.database,
+      index: tableName,
       type: tableName,
       id: data.id,
       body: data
@@ -53,7 +48,7 @@ export default class Elastic {
     const connect = getConnection();
     const data: any = (await connect.query(`select * from \`${tableName}\` where id = ${id}`))[0];
     return await this.client.update({
-      index: connect.options.database,
+      index: tableName,
       type: tableName,
       id: data.id,
       body: {
@@ -64,7 +59,7 @@ export default class Elastic {
   static async syncDelete(id, tableName) {
     const connect = getConnection();
     return await this.client.delete({
-      index: connect.options.database,
+      index: tableName,
       type: tableName,
       id: id
     });
@@ -72,8 +67,7 @@ export default class Elastic {
   static async search(param: { query: string, page: number, size: number, sort: any }, tableName) {
     const connect = getConnection();
     const options = {
-      index: connect.options.database,
-      type: tableName,
+      index: tableName,
       q: param.query,
       from: param.page,
       size: param.size,
@@ -85,7 +79,7 @@ export default class Elastic {
       data.push(item._source);
     });
     const count = await this.client.count({
-      index: connect.options.database,
+      index: tableName,
       type: tableName,
       q: param.query
     });
@@ -100,7 +94,7 @@ export default class Elastic {
   // private static checkIndex() {
   //   if (!this.index) {
   //     const connect = getConnection();
-  //     this.index = connect.options.database.toString();
+  //     this.index = tableName.toString();
   //   }
   // }
 }
