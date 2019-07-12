@@ -47,21 +47,13 @@ export class AppRoutes {
       if (token.length > 7) {
         token = token.substr(7);
       }
+      let decoded: any;
       try {
-        const decoded: any = await new Promise((resolve, reject) => {
+        decoded = await new Promise((resolve, reject) => {
           jwt.verify(token, Cache.config.jwtSecret, (error, decoded) => {
             error ? reject(error) : resolve(decoded);
           });
         });
-        if (decoded.authorities && !decoded.authorities.includes(route.authority)) {
-          context.status = 403;
-          context.body = {
-            title: 'Permission denied',
-            msg: '权限不足'
-          };
-        } else {
-          await this.action(route, context, decoded);
-        }
       } catch (e) {
         context.status = 401;
         context.body = {
@@ -69,29 +61,42 @@ export class AppRoutes {
           msg: token && token !== '' ? '登陆已过期，请重新登录' : '请先登陆'
         };
       }
+      if (decoded.authorities && !decoded.authorities.includes(route.authority)) {
+        context.status = 403;
+        context.body = {
+          title: 'Permission denied',
+          msg: '权限不足'
+        };
+      } else {
+        await this.action(route, context, decoded);
+      }
     } else {
       await this.action(route, context);
     }
   }
 
-  private static async action(route: Route, context: Context, decoded?: Object) {
+  private static async action(route: Route, context: Context, decoded?: any) {
     try {
       await route.action(context, decoded);
     } catch (err) {
-      context.status = 500;
-      if (err.sql || err.query) {
-        const res = {
-          ...err,
-          sql: 'Shielding for security reasons.',
-          query: 'Shielding for security reasons.'
-        };
-        context.body = res;
+      if (err.status == null || err.title == null) {
+        context.status = 500;
+        if (err.sql || err.query) {
+          const res = {
+            ...err,
+            sql: 'Shielding for security reasons.',
+            query: 'Shielding for security reasons.'
+          };
+          context.body = res;
+        } else {
+          context.body = err;
+        }
       } else {
-        context.body = err;
+        throw err
       }
-      throw err;
     }
   }
+
 }
 
 class Route {
