@@ -32,50 +32,62 @@ module.exports = {
           case 'Long':
             item.jsFieldType = 'number';
             item.sqlFieldType = 'bigint';
+            item.esFieldType = 'long';
             break;
           case 'Integer':
             item.jsFieldType = 'number';
             item.sqlFieldType = 'integer';
+            item.esFieldType = 'integer';
             break;
           case 'BigDecimal':
             item.jsFieldType = 'number';
             item.sqlFieldType = 'decimal';
+            item.esFieldType = 'half_float';
             break;
           case 'Float':
             item.jsFieldType = 'number';
             item.sqlFieldType = 'float';
+            item.esFieldType = 'float';
             break;
           case 'Double':
             item.jsFieldType = 'number';
             item.sqlFieldType = 'double';
+            item.esFieldType = 'doule';
             break;
           case 'String':
             item.jsFieldType = 'string';
             item.sqlFieldType = 'varchar';
+            item.esFieldType = 'text';
             break;
           case 'byte[]':
             item.jsFieldType = 'string';
             item.sqlFieldType = item.fieldTypeBlobContent;
+            item.esFieldType = 'text';
             break;
           case 'Boolean':
             item.jsFieldType = 'boolean';
             item.sqlFieldType = 'boolean';
+            item.esFieldType = 'boolean';
             break;
           case 'LocalDate':
             item.jsFieldType = 'Date';
             item.sqlFieldType = 'date';
+            item.esFieldType = 'date';
             break;
           case 'ZonedDateTime':
             item.jsFieldType = 'Date';
             item.sqlFieldType = 'datetime';
+            item.esFieldType = 'date';
             break;
           case 'Instant':
             item.jsFieldType = 'Date';
             item.sqlFieldType = 'datetime';
+            item.esFieldType = 'date';
             break;
           case 'TextBlob':
             item.jsFieldType = 'String';
             item.sqlFieldType = 'text';
+            item.esFieldType = 'text';
             break;
           case 'ImageBlob':
             item.jsFieldType = 'Buffer';
@@ -90,6 +102,7 @@ module.exports = {
             if (item.fieldValues) {
               item.jsFieldType = 'enum';
               item.sqlFieldType = 'varchar';
+              item.esFieldType = 'string';
             } else {
               item.jsFieldType = '< ' + item.fieldType + ' >';
               item.sqlFieldType = '< ' + item.sqlFieldType + ' >';

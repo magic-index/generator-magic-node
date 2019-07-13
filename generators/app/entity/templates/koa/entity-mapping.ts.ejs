@@ -1,0 +1,15 @@
+export default {
+  'properties': {
+    <%_ 
+        entity.entityModel.fields.forEach(function(item) {
+          if (item.esFieldType != null) {
+    _%>
+    '<%= item.fieldName %>': {
+      'type': '<%= item.esFieldType %>'
+    },
+    <%_
+          }
+        })
+    _%>
+  }
+}

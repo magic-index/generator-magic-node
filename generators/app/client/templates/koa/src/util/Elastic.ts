@@ -1,6 +1,7 @@
 import * as elasticsearch from 'elasticsearch';
 import Cache from './Cache';
-import {getConnection} from 'typeorm';
+import {getConnection} from "typeorm";
+import Mapping from './../mapping';
 
 export default class Elastic {
   static client: Client;
@@ -19,6 +20,23 @@ export default class Elastic {
 
     await connect.entityMetadatas.forEach(async (item) => {
        if (item.tableType === 'regular') {
+         await this.client.indices.create({
+           index: item.tableName
+         });
+         // 解析 mapping 目录下的所有 ES 映射，相当于 mysql 建表过程，提前定义好 ES 的表字段类型
+         const mapping = Mapping[item.name + 'Mapping']
+         if (mapping != null) {
+           try {
+             await this.client.indices.putMapping({
+               index: item.tableName,
+               type: item.tableName,
+               body: mapping
+             });
+           } catch (e) {
+             console.error(`error mapping file: ${item.name + 'Mapping'}`)
+             throw e
+           }
+         }
          const list = await connect.query(`select * from \`${item.tableName}\``);
          list.forEach((data: any) => {
            if (data.id) {
@@ -41,7 +59,8 @@ export default class Elastic {
       index: tableName,
       type: tableName,
       id: data.id,
-      body: data
+      body: data,
+      refresh: true
     });
   }
   static async syncUpdate(id, tableName) {
@@ -51,6 +70,7 @@ export default class Elastic {
       index: tableName,
       type: tableName,
       id: data.id,
+      refresh: true,
       body: {
         doc: data
       }
@@ -61,6 +81,7 @@ export default class Elastic {
     return await this.client.delete({
       index: tableName,
       type: tableName,
+      refresh: true,
       id: id
     });
   }
@@ -71,7 +92,7 @@ export default class Elastic {
       q: param.query,
       from: param.page,
       size: param.size,
-      sort: param.sort
+      sort: param.sort != null ? param.sort.split(',') : null
     };
     const res = await this.client.search(options);
     const data = [];

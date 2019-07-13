@@ -11,6 +11,10 @@ function getFileList(options) {
     {
       file: 'entity-action.ts.ejs',
       target: `src/controller/${options.entity.entityClassName}Action.ts`
+    },
+    {
+      file: 'entity-mapping.ts.ejs',
+      target: `src/mapping/${options.entity.entityClassName}Mapping.ts`
     }
   ];
   options.entity.entityModel.fields.forEach(field => {
@@ -23,6 +27,21 @@ function getFileList(options) {
     }
   });
   return list;
+}
+function getInstallFileList(options) {
+  const writeList = [
+    {
+      file: 'src/mapping/index.ts',
+      tag: '/* Generator tag - Install import mapping */',
+      content: `import ${options.entity.entityClassName}Mapping from './${options.entity.entityClassName}Mapping';`
+    },
+    {
+      file: 'src/mapping/index.ts',
+      tag: '/* Generator tag - Install export mapping */',
+      content: `${options.entity.entityClassName}Mapping: ${options.entity.entityClassName}Mapping,`
+    }
+  ];
+  return writeList;
 }
 module.exports = {
   generatorFiles(askEntityOptions, generator = Generator) {
@@ -55,6 +74,22 @@ module.exports = {
         generator.destinationPath(cwd + '/' + item.target),
         options
       );
+    })
+    getInstallFileList(options).forEach(item => {
+      let code = fs.readFileSync(cwd + '/' + item.file).toString();
+      const index = code.indexOf(item.tag);
+      if (code.indexOf(item.content) === -1 && index > -1) {
+        let space = '';
+        for (let i = index - 1; i > 0; i--) {
+          if (code[i] === ' ') {
+            space += ' ';
+          } else {
+            break;
+          }
+        }
+        code = code.replace(item.tag, item.content + '\n' + space + item.tag);
+        fs.writeFileSync(cwd + '/' + item.file, code);
+      }
     })
   }
 };
