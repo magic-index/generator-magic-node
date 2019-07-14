@@ -64,7 +64,7 @@ export default class UserAction {
     }
   }
 
-  @setRoute('/api/account', RequestMethod.GET, AuthorityCode.ROLE_ADMIN)
+  @setRoute('/api/account')
   async getAccount(context: Context, decoded?: any) {
     const userRepository = getManager().getRepository(JhiUser);
     // load a post by a given post id
@@ -84,7 +84,7 @@ export default class UserAction {
     context.body = user;
   }
 
-  @setRoute('/api/user')
+  @setRoute('/api/user', RequestMethod.GET, [AuthorityCode.ROLE_ADMIN])
   async userGetAllAction(context: Context, decoded?: any) {
 
     // get a post repository to perform operations with post

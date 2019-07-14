@@ -49,6 +49,17 @@ export class UnauthorizedAlertException extends BaseError {
   }
 }
 
+export class PermissionDeniedAlertException extends BaseError {
+  constructor(message?: string, detail?: any) {
+    const title = 'Permission denied';
+    super(title);
+    this.title = title;
+    this.status = 403;
+    this.message = message || 'Permission denied';
+    this.detail = detail;
+  }
+}
+
 export class NotFoundAlertException extends BaseError {
   constructor(message?: string, detail?: any) {
     const title = 'Not Found';

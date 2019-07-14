@@ -1,9 +1,10 @@
-import * as UserAction from "../controller/UserAction";
 import * as Router from "koa-router";
 import Cache from '../util/Cache';
-import { Context } from 'koa';
+import {Context} from 'koa';
 import * as jwt from 'jsonwebtoken';
 import {JhiUser} from "../entity/JhiUser";
+import RouterSecurityConfiguration, {RouterSecurityType} from './../config/RouterSecurityConfiguration'
+import {PermissionDeniedAlertException, UnauthorizedAlertException} from "./RequestError";
 
 export enum RequestMethod {
   GET = 'get',
@@ -13,9 +14,15 @@ export enum RequestMethod {
 }
 
 export enum AuthorityCode {
+  ALL = '*',
   ROLE_ADMIN = 'ROLE_ADMIN',
   ROLE_USER = 'ROLE_USER'
 }
+
+let routerSecurityPathList = []
+routerSecurityPathList = Object.keys(RouterSecurityConfiguration).sort((a, b) => {
+  return b.length - a.length
+})
 
 export class AppRoutes {
   static router = new Router();
@@ -31,6 +38,15 @@ export class AppRoutes {
    * @param {Route} route
    */
   static push(route: Route) {
+    for (let i = 0; i < routerSecurityPathList.length; i++) {
+      if (route.path.indexOf(routerSecurityPathList[i]) > -1) {
+        route.security = RouterSecurityConfiguration[routerSecurityPathList[i]];
+        break
+      }
+    }
+    if (route.security == null) {
+      route.security = RouterSecurityType.REJECT
+    }
     this.routes.push(route);
     this.router[route.method](route.path, async (context: Context) => {
       await this.authority(context, route);
@@ -44,49 +60,51 @@ export class AppRoutes {
    * @returns {Promise<void>}
    */
   private static async authority(context: Context, route: Route) {
-    if (route.authorities) {
+    if (route.security === RouterSecurityType.REJECT) {
+      throw new PermissionDeniedAlertException();
+    }
+    // jwt 解密出来的用户信息
+    let decoded: any;
+    // 与接口匹配的权限名
+    let allowRole: any;
+    try {
       let token = context.req.headers.authorization;
       if (token.length > 7) {
         token = token.substr(7);
       }
-      let decoded: any;
-      try {
-        decoded = await new Promise((resolve, reject) => {
-          jwt.verify(token, Cache.config.jwtSecret, (error, decoded) => {
-            error ? reject(error) : resolve(decoded);
-          });
+      decoded = await new Promise((resolve, reject) => {
+        jwt.verify(token, Cache.config.jwtSecret, (error, decoded) => {
+          error ? reject(error) : resolve(decoded);
         });
-      } catch (e) {
-        context.status = 401;
-        context.body = {
-          title: 'Token error',
-          msg: token && token !== '' ? '登陆已过期，请重新登录' : '请先登陆'
-        };
-        return;
+      });
+    } catch (e) {
+    }
+    // 获取与接口相匹配的授权
+    if (decoded != null && route.authorities != null) {
+      for (let i = 0; i < route.authorities.length; i++) {
+        if ((decoded.authorities || []).includes(route.authorities[i])) {
+          allowRole = route.authorities[i];
+          break
+        }
       }
-      if (route.authorities != null && route.authorities.length > 0) {
-        let allowRole = null
-        for (let i = 0; i < route.authorities.length; i++) {
-          if ((decoded.authorities || []).includes(route.authorities[i])) {
-            allowRole = route.authorities[i]
-            break
-          }
-        }
-        if (allowRole == null) {
-          context.status = 403;
-          context.body = {
-            title: 'Permission denied',
-            msg: '权限不足'
-          };
-        } else {
-          decoded.allowRole = allowRole
-          await this.action(route, context, decoded);
-        }
-      } else {
+    }
+    if (decoded != null) {
+      decoded.allowRole = allowRole;
+    }
+    switch (route.security) {
+      case RouterSecurityType.PERMIT:
         await this.action(route, context, decoded);
-      }
-    } else {
-      await this.action(route, context);
+        break;
+      case RouterSecurityType.AUTHENTICATED:
+        if (decoded == null) {
+          throw new UnauthorizedAlertException();
+        } else if (route.authorities != null && route.authorities.length > 0 && allowRole == null) {
+          throw new PermissionDeniedAlertException();
+        }
+        await this.action(route, context, decoded);
+        break;
+      default:
+        throw new PermissionDeniedAlertException();
     }
   }
 
@@ -118,8 +136,9 @@ export class AppRoutes {
 class Route {
   path: string;
   method: RequestMethod;
-  authorities?: Array<AuthorityCode>;
+  authorities?: Array<AuthorityCode> | string;
   action: (context: Context, decoded?: DecodedUserInfo) => {};
+  security?: RouterSecurityType
 }
 
 export class DecodedUserInfo {
