@@ -85,15 +85,32 @@ export default class Elastic {
       id: id
     });
   }
-  static async search(param: { query: string, page: number, size: number, sort: any }, tableName) {
+  static async search(param: { query: string, page: number, size: number, sort: any, filter?: Array<Object> }, tableName) {
     const connect = getConnection();
     const options = {
       index: tableName,
-      q: param.query,
+      q: null,
       from: param.page,
       size: param.size,
-      sort: param.sort != null ? param.sort.split(',') : null
+      sort: param.sort != null ? param.sort.split(',') : null,
+      body: null
     };
+    if (param.filter == null) {
+      options.q = param.query;
+    } else {
+      options.body = {
+        query: {
+          bool: {
+            must: {
+              query_string: {
+                query: param.query,
+              }
+            },
+            filter: param.filter
+          }
+        }
+      };
+    }
     const res = await this.client.search(options);
     const data = [];
     res.hits.hits.forEach((item) => {

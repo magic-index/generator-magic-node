@@ -3,6 +3,7 @@ import * as Router from "koa-router";
 import Cache from '../util/Cache';
 import { Context } from 'koa';
 import * as jwt from 'jsonwebtoken';
+import {JhiUser} from "../entity/JhiUser";
 
 export enum RequestMethod {
   GET = 'get',
@@ -12,7 +13,8 @@ export enum RequestMethod {
 }
 
 export enum AuthorityCode {
-  ROLE_ADMIN = 'ROLE_ADMIN'
+  ROLE_ADMIN = 'ROLE_ADMIN',
+  ROLE_USER = 'ROLE_USER'
 }
 
 export class AppRoutes {
@@ -42,7 +44,7 @@ export class AppRoutes {
    * @returns {Promise<void>}
    */
   private static async authority(context: Context, route: Route) {
-    if (route.authority) {
+    if (route.authorities) {
       let token = context.req.headers.authorization;
       if (token.length > 7) {
         token = token.substr(7);
@@ -60,13 +62,26 @@ export class AppRoutes {
           title: 'Token error',
           msg: token && token !== '' ? '登陆已过期，请重新登录' : '请先登陆'
         };
+        return;
       }
-      if (decoded.authorities && !decoded.authorities.includes(route.authority)) {
-        context.status = 403;
-        context.body = {
-          title: 'Permission denied',
-          msg: '权限不足'
-        };
+      if (route.authorities != null && route.authorities.length > 0) {
+        let allowRole = null
+        for (let i = 0; i < route.authorities.length; i++) {
+          if ((decoded.authorities || []).includes(route.authorities[i])) {
+            allowRole = route.authorities[i]
+            break
+          }
+        }
+        if (allowRole == null) {
+          context.status = 403;
+          context.body = {
+            title: 'Permission denied',
+            msg: '权限不足'
+          };
+        } else {
+          decoded.allowRole = allowRole
+          await this.action(route, context, decoded);
+        }
       } else {
         await this.action(route, context, decoded);
       }
@@ -75,13 +90,14 @@ export class AppRoutes {
     }
   }
 
-  private static async action(route: Route, context: Context, decoded?: any) {
+  private static async action(route: Route, context: Context, decoded?: DecodedUserInfo) {
     try {
       await route.action(context, decoded);
     } catch (err) {
+      console.error(err)
       if (err.status == null || err.title == null) {
-        context.status = 500;
         if (err.sql || err.query) {
+          context.status = 400;
           const res = {
             ...err,
             sql: 'Shielding for security reasons.',
@@ -89,6 +105,7 @@ export class AppRoutes {
           };
           context.body = res;
         } else {
+          context.status = 500;
           context.body = err;
         }
       } else {
@@ -96,14 +113,19 @@ export class AppRoutes {
       }
     }
   }
-
 }
 
 class Route {
   path: string;
   method: RequestMethod;
-  authority?: AuthorityCode;
-  action: Function;
+  authorities?: Array<AuthorityCode>;
+  action: (context: Context, decoded?: DecodedUserInfo) => {};
+}
+
+export class DecodedUserInfo {
+  user: JhiUser;
+  authorities: Array<String>;
+  allowRole: String;
 }
 
 /**
@@ -113,12 +135,12 @@ class Route {
  * @param {AuthorityCode} authority
  * @returns {(target, propertyKey: string, descriptor: PropertyDescriptor) => void}
  */
-export function setRoute(path: string, method: RequestMethod = RequestMethod.GET, authority?: AuthorityCode) {
+export function setRoute(path: string, method: RequestMethod = RequestMethod.GET, authorities?: Array<AuthorityCode>) {
   return (target, propertyKey: string, descriptor: PropertyDescriptor) => {
     AppRoutes.push({
       path,
       method: method || RequestMethod.GET,
-      authority,
+      authorities,
       action: descriptor.value
     });
   }
