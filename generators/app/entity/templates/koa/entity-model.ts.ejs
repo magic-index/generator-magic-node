@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, JoinColumn<%_ entity.entityModel.relationshipsTypeList.forEach(item => { %>, <%= item %><% }) %> } from "typeorm";
 import * as Validator from 'class-validator';
+import ValidatorConstraint from './../util/ValidatorConstraint'
 <%_ entity.entityModel.fields.forEach(item => { _%>
 <%_   if (item.jsFieldType === 'enum') { _%>
 import { <%= item.fieldType %>Enum, <%= item.fieldType %>Array } from './../enum/<%= item.fieldType %>Enum';
@@ -34,10 +35,10 @@ export default class <%= entity.entityClassName %> {
   @Validator.IsNotEmpty()
   <%_ } _%>
   <%_ if (item.fieldValidateRulesMinlength) { _%>
-    @Validator.MinLength(<%= item.fieldValidateRulesMinlength %>)
+  @Validator.Validate(ValidatorConstraint.MinLength, [<%= item.fieldValidateRulesMinlength %>])
   <%_ } _%>
   <%_ if (item.fieldValidateRulesMaxlength) { _%>
-  @Validator.MaxLength(<%= item.fieldValidateRulesMaxlength %>)
+  @Validator.Validate(ValidatorConstraint.MaxLength, [<%= item.fieldValidateRulesMaxlength %>])
   <%_ } _%>
   <%_ if (item.fieldValues) { _%>
   @Validator.IsIn(<%= item.fieldType %>Array)
@@ -56,31 +57,31 @@ export default class <%= entity.entityClassName %> {
   _%>
   <%# 一对一 %>
   @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName%>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
-  <%_ if (item.relationshipValidateRules.includes('required')) { _%>
-  @Validator.IsEmpty()
-  <%_ } _%>
+  <%_   if (item.relationshipValidateRules.includes('required')) { _%>
+  @Validator.IsNotEmpty()
+  <%_   } _%>
   @JoinColumn()
   <%= item.relationshipName%>: <%= item.otherEntityClassName %>;
   <%_ } else if (item.relationshipType === 'one-to-many') { _%>
   <%# 一对多 %>
   @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName %>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
-  <%_ if (item.relationshipValidateRules.includes('required')) { _%>
-  @Validator.IsEmpty()
-  <%_ } _%>
+  <%_   if (item.relationshipValidateRules.includes('required')) { _%>
+  @Validator.IsNotEmpty()
+  <%_   } _%>
   <%= item.relationshipNamePlural %>: <%= item.otherEntityClassName %>[];
   <%_ } else if (item.relationshipType === 'many-to-one') { _%>
   <%# 多对一 %>
   @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName %>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
-  <%_ if (item.relationshipValidateRules.includes('required')) { _%>
-  @Validator.IsEmpty()
-  <%_ } _%>
+  <%_   if (item.relationshipValidateRules.includes('required')) { _%>
+  @Validator.IsNotEmpty()
+   <%_   } _%>
   <%= item.relationshipName%>: <%= item.otherEntityClassName %>;
   <%_ } else if (item.relationshipType === 'many-to-many') { _%>
   <%# 多对多 %>
   @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName %>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
-  <%_ if (item.relationshipValidateRules.includes('required')) { _%>
-  @Validator.IsEmpty()
-  <%_ } _%>
+  <%_   if (item.relationshipValidateRules.includes('required')) { _%>
+  @Validator.IsNotEmpty()
+   <%_   } _%>
   <%= item.relationshipNamePlural%>: <%= item.otherEntityClassName %>[];
   <%_
       }
