@@ -6,7 +6,22 @@ import { validate } from 'class-validator';
 import Elastic from '../util/Elastic';
 <%_ } _%>
 import { setRoute, RequestMethod, DecodedUserInfo } from '../middleware/Routes';
-import { <%= yoConfig.searchEngine === 'elasticsearch' ? 'getElasticSearchParams, setElasticSearchPagingHeader, ' : '' %>setSqlSearchPagingHeader, getSqlSearchPagingParams, getSearchSqlQueryBuilder, deleteSuccessfulResponse, getRequestParamId } from '../util/Tools';
+import { 
+  <%_
+    if (yoConfig.searchEngine === 'elasticsearch') {
+  _%>
+  getElasticSearchParams,
+  setElasticSearchPagingHeader,
+  <%_ 
+    }
+  _%>
+  setSqlSearchPagingHeader,
+  getSqlSearchPagingParams,
+  deleteSuccessfulResponse,
+  getRequestParamId,
+  createSearchSqlRepositoryBody,
+  setRepositoryPagingParams
+} from '../util/Tools';
 import { BadRequestAlertException, NotFoundAlertException } from '../middleware/RequestError';
 
 export default class <%= entity.entityClassName %>Action {
@@ -119,12 +134,13 @@ export default class <%= entity.entityClassName %>Action {
       <%_   } _%>
       <%_ }) _%>
     ];
-    const repository = getSearchSqlQueryBuilder(<%= entity.entityClassName %>, context.request.query, fields);
-    const count = await repository.getCount();
-    const pagingParams = getSqlSearchPagingParams(context);
-    repository.skip(pagingParams.page).take(pagingParams.size);
-    pagingParams.sort.forEach(item => repository.addOrderBy(item.field, item.value));
-    const list = await repository.getMany();
+    const <%= entity.entityCamelName %>Repository = getManager().getRepository(<%= entity.entityClassName %>);
+    const condition: any = {
+      where: createSearchSqlRepositoryBody(context.request.query, fields)
+    };
+    const count = await <%= entity.entityCamelName %>Repository.count(condition);
+    setRepositoryPagingParams(condition, getSqlSearchPagingParams(context));
+    const list = await <%= entity.entityCamelName %>Repository.find(condition);
     setSqlSearchPagingHeader(context, count);
     context.body = list;
   }

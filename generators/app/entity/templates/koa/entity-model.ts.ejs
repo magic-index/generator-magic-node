@@ -56,10 +56,13 @@ export default class <%= entity.entityClassName %> {
       if (item.relationshipType === 'one-to-one') {
   _%>
   <%# 一对一 %>
-  @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName%>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
-  <%_   if (item.relationshipValidateRules.includes('required')) { _%>
+  @Column({ nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
+    <%_   if (item.relationshipValidateRules.includes('required')) { _%>
   @Validator.IsNotEmpty()
   <%_   } _%>
+  <%= item.relationshipName%>Id: number;
+
+  @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName%>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
   @JoinColumn()
   <%= item.relationshipName%>: <%= item.otherEntityClassName %>;
   <%_ } else if (item.relationshipType === 'one-to-many') { _%>
@@ -71,10 +74,13 @@ export default class <%= entity.entityClassName %> {
   <%= item.relationshipNamePlural %>: <%= item.otherEntityClassName %>[];
   <%_ } else if (item.relationshipType === 'many-to-one') { _%>
   <%# 多对一 %>
-  @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName %>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
-  <%_   if (item.relationshipValidateRules.includes('required')) { _%>
+  @Column({ nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
+    <%_   if (item.relationshipValidateRules.includes('required')) { _%>
   @Validator.IsNotEmpty()
-   <%_   } _%>
+  <%_   } _%>
+  <%= item.relationshipName%>Id: number;
+
+  @<%= item.relationshipTypeClassName %>(type => <%= item.otherEntityClassName %>, <%= item.otherEntityName%> => <%= item.otherEntityName %>.<%= item.otherEntityField || 'id'%>, { nullable: <%= item.relationshipValidateRules.includes('required') ? 'false' : 'true' %> })
   <%= item.relationshipName%>: <%= item.otherEntityClassName %>;
   <%_ } else if (item.relationshipType === 'many-to-many') { _%>
   <%# 多对多 %>
