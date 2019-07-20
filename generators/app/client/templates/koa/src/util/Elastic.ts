@@ -52,31 +52,44 @@ export default class Elastic {
        }
     });
   }
-  static async syncCreate(id, tableName) {
+  /**
+   * 把新建的 mysql 数据同步到 es
+   * @param sourceData 源数据或者唯一值
+   * @param tableName mysql 表名
+   * @param key 唯一值对应的变量名，默认为 id
+   */
+  static async syncCreate(sourceData: string | number | Object, tableName: string, key: string = 'id') {
     const connect = getConnection();
-    const data: any = (await connect.query(`select * from \`${tableName}\` where id = ${id}`))[0];
+    const data: any = typeof sourceData === 'object' ? sourceData : (await connect.query(`select * from \`${tableName}\` where ${key} = ${sourceData}`))[0];
     return await this.client.create({
       index: tableName,
       type: tableName,
-      id: data.id,
+      id: data[key],
       body: data,
       refresh: true
     });
   }
-  static async syncUpdate(id, tableName) {
+
+  /**
+   * 把更新后的 mysql 数据同步到 es
+   * @param sourceData 源数据或者唯一值
+   * @param tableName mysql 表名
+   * @param key 唯一值对应的变量名，默认为 id
+   */
+  static async syncUpdate(sourceData: string | number | Object, tableName: string, key: string = 'id') {
     const connect = getConnection();
-    const data: any = (await connect.query(`select * from \`${tableName}\` where id = ${id}`))[0];
+    const data: any = typeof sourceData === 'object' ? sourceData : (await connect.query(`select * from \`${tableName}\` where ${key} = ${sourceData}`))[0];
     return await this.client.update({
       index: tableName,
       type: tableName,
-      id: data.id,
+      id: data[key],
       refresh: true,
       body: {
         doc: data
       }
     });
   }
-  static async syncDelete(id, tableName) {
+  static async syncDelete(id: string | number, tableName: string) {
     const connect = getConnection();
     return await this.client.delete({
       index: tableName,
@@ -85,7 +98,7 @@ export default class Elastic {
       id: id
     });
   }
-  static async search(param: { query: string, page: number, size: number, sort: any, filter?: Array<Object> }, tableName) {
+  static async search(param: { query: string, page: number, size: number, sort: any, filter?: Array<Object> }, tableName: string) {
     const connect = getConnection();
     const options = {
       index: tableName,

@@ -63,16 +63,17 @@ export default class <%= entity.entityClassName %>Action {
   @setRoute('/api/<%= entity.entityFolderNamePlural %>', RequestMethod.POST)
   async create<%= entity.entityClassName %>(context: Context, decoded?: DecodedUserInfo) {
     const <%= entity.entityCamelName %>Repository = getManager().getRepository(<%= entity.entityClassName %>);
-    const <%= entity.entityCamelName %>: <%= entity.entityClassName %> = <%= entity.entityCamelName %>Repository.create(<<%= entity.entityClassName %>>{
+    let <%= entity.entityCamelName %>: <%= entity.entityClassName %> = <%= entity.entityCamelName %>Repository.create(<<%= entity.entityClassName %>>{
       ...context.request.body
     });
     const errors = await validate(<%= entity.entityCamelName %>);
     if (errors.length > 0) {
       throw new BadRequestAlertException(null, errors);
     } else {
-      await getManager().save(<%= entity.entityCamelName %>);
+      await <%= entity.entityCamelName %>Repository.save(<%= entity.entityCamelName %>);
+      <%= entity.entityCamelName %> = await <%= entity.entityCamelName %>Repository.findOne(<%= entity.entityCamelName %>.id);
       <%_ if (yoConfig.searchEngine === 'elasticsearch') { _%>
-      await Elastic.syncCreate(<%= entity.entityCamelName %>.id, <%= entity.entityCamelName %>Repository.metadata.tableName);
+      await Elastic.syncCreate(<%= entity.entityCamelName %>, <%= entity.entityCamelName %>Repository.metadata.tableName);
       <%_ } _%>
       context.body = <%= entity.entityCamelName %>;
     }
@@ -86,7 +87,7 @@ export default class <%= entity.entityClassName %>Action {
   @setRoute('/api/<%= entity.entityFolderNamePlural %>', RequestMethod.PUT)
   async update<%= entity.entityClassName %>(context: Context, decoded?: DecodedUserInfo) {
     const <%= entity.entityCamelName %>Repository = getManager().getRepository(<%= entity.entityClassName %>);
-    const <%= entity.entityCamelName %>: <%= entity.entityClassName %> = <%= entity.entityCamelName %>Repository.create(<<%= entity.entityClassName %>>{
+    let <%= entity.entityCamelName %>: <%= entity.entityClassName %> = <%= entity.entityCamelName %>Repository.create(<<%= entity.entityClassName %>>{
       ...context.request.body
     });
     const errors = await validate(<%= entity.entityCamelName %>);
@@ -94,8 +95,9 @@ export default class <%= entity.entityClassName %>Action {
       throw new BadRequestAlertException(null, errors);
     } else {
       await <%= entity.entityCamelName %>Repository.update(<%= entity.entityCamelName %>.id, <%= entity.entityCamelName %>);
+      <%= entity.entityCamelName %> = await <%= entity.entityCamelName %>Repository.findOne(<%= entity.entityCamelName %>.id);
       <%_ if (yoConfig.searchEngine === 'elasticsearch') { _%>      
-      await Elastic.syncUpdate(<%= entity.entityCamelName %>.id, <%= entity.entityCamelName %>Repository.metadata.tableName);
+      await Elastic.syncUpdate(<%= entity.entityCamelName %>, <%= entity.entityCamelName %>Repository.metadata.tableName);
       <%_ } _%>
       context.body = <%= entity.entityCamelName %>;
     }
