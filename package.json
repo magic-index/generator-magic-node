@@ -1,7 +1,7 @@
 {
   "name": "generator-magic-node",
-  "version": "0.1.0-dev.25",
-  "description": "Nodejs project generator, able to generate scaffolding and entity classes.",
+  "version": "0.1.0-dev.26",
+  "description": "Nodejs project generator, able to generate framework and entity classes.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/little-snow-fox/generator-magic-node"
@@ -20,7 +20,8 @@
     "generator",
     "node",
     "koa",
-    "typeorm"
+    "typeorm",
+    "magic"
   ],
   "dependencies": {
     "chalk": "^2.4.1",

@@ -38,37 +38,93 @@ npm install -g generator-magic-node
 
 # 使用  
 * 生成脚手架
-```
-mkdir node-project
-cd node-project
-yo magic-node
-```
+    ```
+    mkdir node-project
+    cd node-project
+    yo magic-node
+    ```
 
 * 生成实体类  
-1. 请到 [jdl-studio](https://start.jhipster.tech/jdl-studio) 编写好数据表结构，并导出到项目根目录，例如我导出的文件是 jhipster-jdl.jh
-    ```
-        cp jhipster-jdl.jh node-project/jhipster-jdl.jh
-        cd node-project
-        jhipster import-jdl jhipster-jdl.jh
-    ```
-    执行成功后，当前项目文件目录下会出现一个 .jhipster 文件夹，里面包含了后续需要使用的数据模型配置文件  
+    1. 请到 [jdl-studio](https://start.jhipster.tech/jdl-studio) 编写好数据表结构，并导出到项目根目录，例如我导出的文件是 jhipster-jdl.jh
+        ```
+            cp jhipster-jdl.jh node-project/jhipster-jdl.jh
+            cd node-project
+            jhipster import-jdl jhipster-jdl.jh
+        ```
+        执行成功后，当前项目文件目录下会出现一个 .jhipster 文件夹，里面包含了后续需要使用的数据模型配置文件  
 
-2. 执行命令生成实体类
+    2. 执行命令生成实体类
+        ```
+        yo magic-node --lang=zh --entity=Region
+        ```
+        或者
+        ```
+        yo magic-node
+        language[en/zh/ja] en
+        What generates? Entity class
+        Entity name: Region
+        ```
+    3. 运行项目
+        ```
+        npm install tsc -g
+        npm install
+        npm run start
+        ```
+
+* 实体配置文件模板  
+
+    .jhipster/Region.json
     ```
-    yo magic-node --lang=zh --entity=Region
-    ```
-    或者
-    ```
-    yo magic-node
-    language[en/zh/ja] en
-    What generates? Entity class
-    Entity name: Region
-    ```
-3. 运行项目
-    ```
-    npm install tsc -g
-    npm install
-    npm run start
+    {
+      "javadoc": "区域",
+      "name": "Region",
+      "fields": [
+        {
+          "javadoc": "名称",
+          "fieldName": "name",
+          "fieldType": "String",
+          "fieldValidateRules": [
+            "required",
+            "maxlength"
+          ],
+          "fieldValidateRulesMaxlength": 64
+        },
+        {
+          "javadoc": "创建时间",
+          "fieldName": "createTime",
+          "fieldType": "Instant",
+          "fieldValidateRules": ["required"]
+        },
+        {
+          "javadoc": "修改时间",
+          "fieldName": "updateTime",
+          "fieldType": "Instant",
+          "fieldValidateRules": ["required"]
+        },
+        {
+          "javadoc": "是否可见",
+          "fieldName": "isVisible",
+          "fieldType": "Boolean",
+          "fieldValidateRules": ["required"]
+        },
+        {
+          "javadoc": "是否删除",
+          "fieldName": "isDelete",
+          "fieldType": "Boolean",
+          "fieldValidateRules": ["required"]
+        }
+      ],
+      "relationships": [],
+      "changelogDate": "20190706100248",
+      "entityTableName": "region",
+      "dto": "mapstruct",
+      "pagination": "pagination",
+      "service": "serviceImpl",
+      "jpaMetamodelFiltering": true,
+      "fluentMethods": true,
+      "clientRootFolder": "",
+      "applications": "*"
+    }
     ```
 
 # 目录结构
@@ -132,7 +188,7 @@ export default class RegionAction {
   @setRoute('/api/regions', RequestMethod.POST)
   async createRegion(context: Context, decoded?: any) {
     const regionRepository = getManager().getRepository(Region);
-    const region: Region = regionRepository.create(<Region>{
+    let region: Region = regionRepository.create(<Region>{
       ...context.request.body
     });
     const errors = await validate(region);
@@ -140,7 +196,8 @@ export default class RegionAction {
       throw new BadRequestAlertException(null, errors);
     } else {
       await getManager().save(region);
-      await Elastic.syncCreate(region.id, regionRepository.metadata.tableName);
+      region = await regionRepository.findOne(region.id);
+      await Elastic.syncCreate(region, regionRepository.metadata.tableName);
       context.body = region;
     }
   }
@@ -153,7 +210,7 @@ export default class RegionAction {
   @setRoute('/api/regions', RequestMethod.PUT)
   async updateRegion(context: Context, decoded?: any) {
     const regionRepository = getManager().getRepository(Region);
-    const region: Region = regionRepository.create(<Region>{
+    let region: Region = regionRepository.create(<Region>{
       ...context.request.body
     });
     const errors = await validate(region);
@@ -161,7 +218,8 @@ export default class RegionAction {
       throw new BadRequestAlertException(null, errors);
     } else {
       await regionRepository.update(region.id, region);
-      await Elastic.syncUpdate(region.id, regionRepository.metadata.tableName);
+      region = await regionRepository.findOne(region.id);
+      await Elastic.syncUpdate(region, regionRepository.metadata.tableName);
       context.body = region;
     }
   }
@@ -178,6 +236,28 @@ export default class RegionAction {
     await regionRepository.delete(id);
     await Elastic.syncDelete(id, regionRepository.metadata.tableName);
     deleteSuccessfulResponse(context, id)
+  }
+  /**
+   * find
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/regions')
+  async findRegion(context: Context, decoded?: DecodedUserInfo) {
+    const fields = [
+      'id',
+      'name'
+    ];
+    const regionRepository = getManager().getRepository(Region);
+    const condition: any = {
+      where: createSearchSqlRepositoryBody(context.request.query, fields)
+    };
+    const count = await regionRepository.count(condition);
+    setRepositoryPagingParams(condition, getSqlSearchPagingParams(context));
+    const list = await regionRepository.find(condition);
+    setSqlSearchPagingHeader(context, count);
+    context.body = list;
   }
   /**
    * search
@@ -205,7 +285,7 @@ export default class RegionAction {
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: 137cfaa2-bba3-94c6-a73d-858bf899f3c7' \
-    --data '{\n	"regionName": "CN"\n}'
+    --data '{\n	"name": "CN"\n}'
     ```
     ```
     POST /api/regions HTTP/1.1
@@ -215,13 +295,13 @@ export default class RegionAction {
     Postman-Token: ffe8ff8c-f9e2-60be-dc1a-0f7e5e2b2383
 
     {
-        "regionName": "CN"
+        "name": "CN"
     }
     ```
     响应：
     ```
     {
-        "regionName": "CN",
+        "name": "CN",
         "id": 1
     }
     ```
@@ -233,7 +313,7 @@ export default class RegionAction {
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: e4cae952-07bc-0857-73be-9d2099d3954f' \
-    --data '{\n	"id": 1,\n	"regionName": "JP"\n}'
+    --data '{\n	"id": 1,\n	"name": "JP"\n}'
     ```
     ```
     PUT /api/regions HTTP/1.1
@@ -244,14 +324,14 @@ export default class RegionAction {
 
     {
 	    "id": 1,
-	    "regionName": "JP"
+	    "name": "JP"
     }
     ```
     响应：
     ```
     {
         "id": 1,
-        "regionName": "JP"
+        "name": "JP"
     }
     ```
 * 删除  
@@ -297,7 +377,7 @@ export default class RegionAction {
     ```
     {
         "id": 1,
-        "regionName": "CN"
+        "name": "CN"
     }
     ```
 * 查询 (使用 Elasticsearch 的时候)  
@@ -310,13 +390,13 @@ export default class RegionAction {
     请求：
     ```
     curl --request GET \
-    --url 'http://localhost:3000/api/_search/regions?query=regionName%3ACN&page=0&size=10' \
+    --url 'http://localhost:3000/api/_search/regions?query=name%3ACN&page=0&size=10' \
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: 12afa220-9d89-6f7c-97b9-1dde9f4c8c85'
     ```
     ```
-    GET /api/_search/regions?query=regionName:CN&amp;page=0&amp;size=10 HTTP/1.1
+    GET /api/_search/regions?query=name:CN&amp;page=0&amp;size=10 HTTP/1.1
     Host: localhost:3000
     Content-Type: application/json
     Cache-Control: no-cache
@@ -334,13 +414,13 @@ export default class RegionAction {
     [
         {
             "id": 1,
-            "regionName": "CN"
+            "name": "CN"
         }
     ]
     ```
 * 查询 (使用 Mysql 的时候)  
     参数：  
-    * *.equals: 条件，全等判断，例如：regionName.equals=CN
+    * *.equals: 条件，全等判断，例如：name.equals=CN
     * *.contains: 条件，包含判断
     * *.in: 条件，数组包含判断，例如：id.in=1,2,3  
     * *.specified: 条件，真假判断，例如：name.specified=true
@@ -350,18 +430,18 @@ export default class RegionAction {
     * *.lessThan: 条件，小于
     * page: 页数，从 0 开始，默认 0 
     * size: 每页大小，默认 10  
-    * sort: 排序，例如：sort=id,DESC&sort=regionName,ASC
+    * sort: 排序，例如：sort=id,DESC&sort=name,ASC
 
     请求：
     ```
     curl --request GET \
-    --url 'http://localhost:3000/api/_search/regions?regionName.equals=CN&sort=id%2CDESC&page=0&size=10' \
+    --url 'http://localhost:3000/api/_search/regions?name.equals=CN&sort=id%2CDESC&page=0&size=10' \
     --header 'cache-control: no-cache' \
     --header 'content-type: application/json' \
     --header 'postman-token: 2bee9d1e-d406-a8fc-47fb-01f0cd5a661a'
     ```
     ```
-    GET /api/_search/regions?regionName.equals=CN&amp;sort=id,DESC&amp;page=0&amp;size=10 HTTP/1.1
+    GET /api/_search/regions?name.equals=CN&amp;sort=id,DESC&amp;page=0&amp;size=10 HTTP/1.1
     Host: localhost:3000
     Content-Type: application/json
     Cache-Control: no-cache
@@ -379,7 +459,7 @@ export default class RegionAction {
     [
         {
             "id": 1,
-            "regionName": "CN"
+            "name": "CN"
         }
     ]
     ```
@@ -453,6 +533,79 @@ export default class RegionAction {
             "ROLE_USER"
         ]
     }
+    ```
+
+* api 入口管制与数据过滤  
+
+    通过 api 前缀来控制接口是否公布给外部访问  
+    src/config/RouterSecurityConfiguration.ts  
+    ```
+    export enum RouterSecurityType {
+      PERMIT = 'permit',
+      AUTHENTICATED = 'authenticated',
+      REJECT = 'reject'
+    }
+
+    export default {
+      '/api': RouterSecurityType.AUTHENTICATED,
+      '/api/authenticate': RouterSecurityType.PERMIT
+    }
+    ```
+
+    下图为 controller 层中的 Action 方法，通过在方法上添加注解来实现角色权限控制。  
+
+    decoded.allowRole 是指允许用户进来的角色权限，一般情况下用户可能会存在多个角色，所以但多个权限能够匹配进来的时候， allowRole 只会记录 AuthorityCode 数组中靠前的权限名称
+    src/controller/RegionAction.ts
+    ```
+    /**
+    * post
+    * @param {Application.Context} context
+    * @param decoded
+    * @returns {Promise<void>}
+    */
+    @setRoute('/api/regions', RequestMethod.POST, [AuthorityCode.ROLE_ADMIN, AuthorityCode.ROLE_USER])
+    async createRegion(context: Context, decoded?: DecodedUserInfo) {
+        const regionRepository = getManager().getRepository(Region);
+        let region: Region = regionRepository.create(<region>{
+          ...context.request.body
+        });
+        if (decoded.allowRole === AuthorityCode.ROLE_USER) {
+        Audit.addCreateInfo(region, decoded.user);
+          region.isPublic = false;
+          region.isDelete = false;
+          region.isVisible = true;
+        }
+        const errors = await validate(region);
+        if (errors.length > 0) {
+          throw new BadRequestAlertException(null, errors);
+        } else {
+          await regionRepository.save(region);
+          region = await regionRepository.findOne(region.id);
+          await Elastic.syncCreate(region,regionRepository.metadata.tableName);
+          context.body = region;
+        }
+    }
+    /**
+    * search
+    * @param {Application.Context} context
+    * @param decoded
+    * @returns {Promise<void>}
+    */
+    @setRoute('/api/_search/regions', RequestMethod.GET, [AuthorityCode.ROLE_ADMIN, AuthorityCode.ROLE_USER])
+    async searchArticleRegion(context: Context, decoded?: DecodedUserInfo) {
+        let filter;
+        if (decoded.allowRole === AuthorityCode.ROLE_USER) {
+          filter = [
+              {
+                term: {
+                  createUser: decoded.user.login
+                }
+              }
+          ]
+        }
+        const res: any = await Elastic.search(getElasticSearchParams(context, filter), 'article_region');
+        setElasticSearchPagingHeader(context, res);
+        context.body = res.data;
     ```
 
 # 技术栈  

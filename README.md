@@ -18,7 +18,7 @@
 </div>
 
 # Describe    
-This is a node back-end service generator that generates scaffolding and entity classes.   
+This is a node background service generator that generates framework and entity classes.   
 
 In order to ensure that the background required for a set of front-end projects can switch seamlessly between jhipster and nodejs, the interface specification and jhipster are as consistent as possible, including authorization and authentication methods.
 
@@ -39,39 +39,94 @@ npm install -g generator-magic-node
 
 # Use    
 * Generating scaffold.
-```
-mkdir node-project
-cd node-project
-yo magic-node
-```
+    ```
+    mkdir node-project
+    cd node-project
+    yo magic-node
+    ```
 
 * Generating entity classes.
-1. Please go to [jdl-studio](https://start.jhipster.tech/jdl-studio) to write the data table and export it to the project root directory. For example, the file I exported is jhipster-jdl.jh
-    ```
-        cp jhipster-jdl.jh node-project/jhipster-jdl.jh
-        cd node-project
-        jhipster import-jdl jhipster-jdl.jh
-    ```
-    After successful execution, .jhipster folder will appear in the current project file directory.
+    1. Please go to [jdl-studio](https://start.jhipster.tech/jdl-studio) to write the data table and export it to the project root directory. For example, the file I exported is jhipster-jdl.jh
+        ```
+            cp jhipster-jdl.jh node-project/jhipster-jdl.jh
+            cd node-project
+            jhipster import-jdl jhipster-jdl.jh
+        ```
+        After successful execution, .jhipster folder will appear in the current project file directory.
 
-2. Execute the command to generate the entity class.
-    ```
-    yo magic-node --lang=zh --entity=Region
-    ```
-    Or
-    ```
-    yo magic-node
-    language[en/zh/ja] en
-    What generates? Entity class
-    Entity name: Region
-    ```
-3. Run project.
-    ```
-    npm install tsc -g
-    npm install
-    npm run start
-    ```
+    2. Execute the command to generate the entity class.
+        ```
+        yo magic-node --lang=zh --entity=Region
+        ```
+        Or
+        ```
+        yo magic-node
+        language[en/zh/ja] en
+        What generates? Entity class
+        Entity name: Region
+        ```
+    3. Run project.
+        ```
+        npm install tsc -g
+        npm install
+        npm run start
+        ```
+* Entity profile templates  
 
+    .jhipster/Region.json
+    ```
+    {
+      "javadoc": "region",
+      "name": "Region",
+      "fields": [
+        {
+          "javadoc": "name",
+          "fieldName": "name",
+          "fieldType": "String",
+          "fieldValidateRules": [
+            "required",
+            "maxlength"
+          ],
+          "fieldValidateRulesMaxlength": 64
+        },
+        {
+          "javadoc": "create time",
+          "fieldName": "createTime",
+          "fieldType": "Instant",
+          "fieldValidateRules": ["required"]
+        },
+        {
+          "javadoc": "update time",
+          "fieldName": "updateTime",
+          "fieldType": "Instant",
+          "fieldValidateRules": ["required"]
+        },
+        {
+          "javadoc": "is visible",
+          "fieldName": "isVisible",
+          "fieldType": "Boolean",
+          "fieldValidateRules": ["required"]
+        },
+        {
+          "javadoc": "is delete",
+          "fieldName": "isDelete",
+          "fieldType": "Boolean",
+          "fieldValidateRules": ["required"]
+        }
+      ],
+      "relationships": [],
+      "changelogDate": "20190706100248",
+      "entityTableName": "region",
+      "dto": "mapstruct",
+      "pagination": "pagination",
+      "service": "serviceImpl",
+      "jpaMetamodelFiltering": true,
+      "fluentMethods": true,
+      "clientRootFolder": "",
+      "applications": "*"
+    }
+    ```
+    
 # Directory structure
 ```
 .directory
@@ -133,7 +188,7 @@ export default class RegionAction {
   @setRoute('/api/regions', RequestMethod.POST)
   async createRegion(context: Context, decoded?: any) {
     const regionRepository = getManager().getRepository(Region);
-    const region: Region = regionRepository.create(<Region>{
+    let region: Region = regionRepository.create(<Region>{
       ...context.request.body
     });
     const errors = await validate(region);
@@ -141,7 +196,8 @@ export default class RegionAction {
       throw new BadRequestAlertException(null, errors);
     } else {
       await getManager().save(region);
-      await Elastic.syncCreate(region.id, regionRepository.metadata.tableName);
+      region = await regionRepository.findOne(region.id);
+      await Elastic.syncCreate(region, regionRepository.metadata.tableName);
       context.body = region;
     }
   }
@@ -154,7 +210,7 @@ export default class RegionAction {
   @setRoute('/api/regions', RequestMethod.PUT)
   async updateRegion(context: Context, decoded?: any) {
     const regionRepository = getManager().getRepository(Region);
-    const region: Region = regionRepository.create(<Region>{
+    let region: Region = regionRepository.create(<Region>{
       ...context.request.body
     });
     const errors = await validate(region);
@@ -162,7 +218,8 @@ export default class RegionAction {
       throw new BadRequestAlertException(null, errors);
     } else {
       await regionRepository.update(region.id, region);
-      await Elastic.syncUpdate(region.id, regionRepository.metadata.tableName);
+      region = await regionRepository.findOne(region.id);
+      await Elastic.syncUpdate(region, regionRepository.metadata.tableName);
       context.body = region;
     }
   }
@@ -179,6 +236,28 @@ export default class RegionAction {
     await regionRepository.delete(id);
     await Elastic.syncDelete(id, regionRepository.metadata.tableName);
     deleteSuccessfulResponse(context, id)
+  }
+  /**
+   * find
+   * @param {Application.Context} context
+   * @param decoded
+   * @returns {Promise<void>}
+   */
+  @setRoute('/api/regions')
+  async findRegion(context: Context, decoded?: DecodedUserInfo) {
+    const fields = [
+      'id',
+      'regionName'
+    ];
+    const regionRepository = getManager().getRepository(Region);
+    const condition: any = {
+      where: createSearchSqlRepositoryBody(context.request.query, fields)
+    };
+    const count = await regionRepository.count(condition);
+    setRepositoryPagingParams(condition, getSqlSearchPagingParams(context));
+    const list = await regionRepository.find(condition);
+    setSqlSearchPagingHeader(context, count);
+    context.body = list;
   }
   /**
    * search
@@ -454,6 +533,78 @@ Authorize the use of the JWT protocol, The interface is the same as jhipster's J
             "ROLE_USER"
         ]
     }
+    ```
+* Api access control and data filtering
+
+    API prefixes control whether an interface is exposed to external access. 
+    /config/RouterSecurityConfiguration.ts  
+    ```
+    export enum RouterSecurityType {
+      PERMIT = 'permit',
+      AUTHENTICATED = 'authenticated',
+      REJECT = 'reject'
+    }
+
+    export default {
+      '/api': RouterSecurityType.AUTHENTICATED,
+      '/api/authenticate': RouterSecurityType.PERMIT
+    }
+    ```
+
+    The Action method in the controller layer is shown below, which is annotated to control role permissions.
+
+    decoded.allowRole refers to the permission of the role that allows the user to come in. Generally speaking, the user may have multiple roles, so when multiple permissions can be matched, allowRole only records the permission name at the top of the AuthorityCode array.
+    /controller/RegionAction.ts
+    ```
+    /**
+    * post
+    * @param {Application.Context} context
+    * @param decoded
+    * @returns {Promise<void>}
+    */
+    @setRoute('/api/regions', RequestMethod.POST, [AuthorityCode.ROLE_ADMIN, AuthorityCode.ROLE_USER])
+    async createRegion(context: Context, decoded?: DecodedUserInfo) {
+        const regionRepository = getManager().getRepository(Region);
+        let region: Region = regionRepository.create(<region>{
+          ...context.request.body
+        });
+        if (decoded.allowRole === AuthorityCode.ROLE_USER) {
+        Audit.addCreateInfo(region, decoded.user);
+          region.isPublic = false;
+          region.isDelete = false;
+          region.isVisible = true;
+        }
+        const errors = await validate(region);
+        if (errors.length > 0) {
+          throw new BadRequestAlertException(null, errors);
+        } else {
+          await regionRepository.save(region);
+          region = await regionRepository.findOne(region.id);
+          await Elastic.syncCreate(region,regionRepository.metadata.tableName);
+          context.body = region;
+        }
+    }
+    /**
+    * search
+    * @param {Application.Context} context
+    * @param decoded
+    * @returns {Promise<void>}
+    */
+    @setRoute('/api/_search/regions', RequestMethod.GET, [AuthorityCode.ROLE_ADMIN, AuthorityCode.ROLE_USER])
+    async searchArticleRegion(context: Context, decoded?: DecodedUserInfo) {
+        let filter;
+        if (decoded.allowRole === AuthorityCode.ROLE_USER) {
+          filter = [
+              {
+                term: {
+                  createUser: decoded.user.login
+                }
+              }
+          ]
+        }
+        const res: any = await Elastic.search(getElasticSearchParams(context, filter), 'article_region');
+        setElasticSearchPagingHeader(context, res);
+        context.body = res.data;
     ```
 
 # Technology stack   
