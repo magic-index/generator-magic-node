@@ -11,3 +11,4 @@ src/**/*.js.map
 *.sln
 
 package-lock.json
+yarn.lock
