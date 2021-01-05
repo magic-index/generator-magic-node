@@ -30,7 +30,7 @@ module.exports = {
         // 把 JDL 类型转为 js 和 sql 类型
         switch (item.fieldType) {
           case 'Long':
-            item.jsFieldType = 'number';
+            item.jsFieldType = 'string';
             item.sqlFieldType = 'bigint';
             item.esFieldType = 'long';
             break;
@@ -102,7 +102,7 @@ module.exports = {
             if (item.fieldValues) {
               item.jsFieldType = 'enum';
               item.sqlFieldType = 'varchar';
-              item.esFieldType = 'string';
+              item.esFieldType = 'keyword';
             } else {
               item.jsFieldType = '< ' + item.fieldType + ' >';
               item.sqlFieldType = '< ' + item.sqlFieldType + ' >';

@@ -23,6 +23,7 @@ import {
   setRepositoryPagingParams
 } from '../util/Tools';
 import { BadRequestAlertException, NotFoundAlertException } from '../middleware/RequestError';
+import SnowFlake from '../util/SnowFlake'
 
 export default class <%= entity.entityClassName %>Action {
   /**
@@ -66,12 +67,13 @@ export default class <%= entity.entityClassName %>Action {
     let <%= entity.entityCamelName %>: <%= entity.entityClassName %> = <%= entity.entityCamelName %>Repository.create(<<%= entity.entityClassName %>>{
       ...context.request.body
     });
+    <%= entity.entityCamelName %>.id = SnowFlake.next()
     const errors = await validate(<%= entity.entityCamelName %>);
     if (errors.length > 0) {
       throw new BadRequestAlertException(null, errors);
     } else {
       await <%= entity.entityCamelName %>Repository.save(<%= entity.entityCamelName %>);
-      <%= entity.entityCamelName %> = await <%= entity.entityCamelName %>Repository.findOne(<%= entity.entityCamelName %>.id);
+      // <%= entity.entityCamelName %> = await <%= entity.entityCamelName %>Repository.findOne(<%= entity.entityCamelName %>.id);
       <%_ if (yoConfig.searchEngine === 'elasticsearch') { _%>
       await Elastic.syncCreate(<%= entity.entityCamelName %>, <%= entity.entityCamelName %>Repository.metadata.tableName);
       <%_ } _%>

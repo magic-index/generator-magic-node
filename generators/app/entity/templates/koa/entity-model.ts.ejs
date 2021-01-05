@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn<%_ entity.entityModel.relationshipsTypeList.forEach(item => { %>, <%= item %><% }) %> } from "typeorm";
+import { Entity, PrimaryColumn, Column, JoinColumn<%_ entity.entityModel.relationshipsTypeList.forEach(item => { %>, <%= item %><% }) %> } from "typeorm";
 import * as Validator from 'class-validator';
 import ValidatorConstraint from './../util/ValidatorConstraint'
 <%_ entity.entityModel.fields.forEach(item => { _%>
@@ -19,8 +19,10 @@ _%>
 export default class <%= entity.entityClassName %> {
 
   <%_ if (!entity.existsId) { _%>
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn({
+    type: "bigint"
+  })
+  id: string;
   <%_ } _%>
 
   <%_ entity.entityModel.fields.forEach(function(item) { _%>

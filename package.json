@@ -1,6 +1,6 @@
 {
   "name": "generator-magic-node",
-  "version": "0.1.0-dev.26",
+  "version": "0.1.0-dev.27",
   "description": "Nodejs project generator, able to generate framework and entity classes.",
   "repository": {
     "type": "git",
